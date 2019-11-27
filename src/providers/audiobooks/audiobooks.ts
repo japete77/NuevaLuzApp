@@ -3,16 +3,6 @@ import { LoadingController, AlertController } from '@ionic/angular';
 
 import * as globalVars from '../../globals';
 import { SessionProvider } from '../session/session';
-import { GetTitlesResponse } from '../../models/gettitlesresponse';
-import { GetAuthorsResponse } from '../../models/getauthorsresponse';
-import { SearchTitlesResponse } from '../../models/searchtitlesresponse';
-import { SearchAuthorsResponse } from '../../models/searchauthorsresponse';
-import { GetAudioBookDetailResponse } from '../../models/getaudiobookdetailresponse';
-import { GetAuthorsIndexesResponse } from '../../models/getauthorsindexesresponse';
-import { GetTitlesIndexesResponse } from '../../models/gettitlesindexesresponse';
-import { GetAuthorsFilteredResponse } from '../../models/getauthorsfilteredresponse';
-import { GetTitlesFilteredResponse } from '../../models/gettitlesfilteredresponse';
-import { GetTitlesByAuthorResponse } from '../../models/gettitlesbyauthorresponse';
 import { http, IHttpResponse } from 'src/shared/http';
 import { TitleResult } from 'src/models/titleresult';
 import { AudioBookDetailResult } from 'src/models/audiobookdetailresult';
@@ -46,20 +36,20 @@ export class AudioBooksProvider {
     return await this.Get<AuthorsResult>('searchauthors', text, index, count, '');
   }
 
-  public async GetAuthorsIndexes(): Promise<GetAuthorsIndexesResponse> {
-    return await this.Get<GetAuthorsIndexesResponse>('GetAuthorsIndexes', '', 0, 0, '');
+  public async GetAuthorsIndexes(): Promise<string[]> {
+    return await this.Get<string[]>('GetAuthorsIndexes', '', 0, 0, '');
   }
 
-  public async etAuthorsFiltered(index: number, count: number, filter: string): Promise<GetAuthorsFilteredResponse> {
-    return await this.Get<GetAuthorsFilteredResponse>('GetAuthorsFiltered', '', index, count, filter);
+  public async GetAuthorsFiltered(index: number, count: number, filter: string): Promise<AuthorsResult> {
+    return await this.Get<AuthorsResult>('GetAuthorsFiltered', '', index, count, filter);
   }
 
-  public async GetTitlesIndexes(): Promise<GetTitlesIndexesResponse> {
-    return await this.Get<GetTitlesIndexesResponse>('GetTitlesIndexes', '', 0, 0, '');
+  public async GetTitlesIndexes(): Promise<string[]> {
+    return await this.Get<string[]>('GetTitlesIndexes', '', 0, 0, '');
   }
 
-  public async GetTitlesFiltered(index: number, count: number, filter: string): Promise<GetTitlesFilteredResponse> {
-    return await this.Get<GetTitlesFilteredResponse>('GetTitlesFiltered', '', index, count, filter);
+  public async GetTitlesFiltered(index: number, count: number, filter: string): Promise<TitleResult> {
+    return await this.Get<TitleResult>('GetTitlesFiltered', '', index, count, filter);
   }
 
   public async GetBookDetail(id: string): Promise<AudioBookDetailResult> {

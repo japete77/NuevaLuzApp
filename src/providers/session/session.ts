@@ -3,11 +3,11 @@ import { File } from '@ionic-native/file/ngx';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import * as globalVars from '../../globals';
-import { LoginResult } from '../../models/loginresponse';
 import { SessionInfo } from '../../models/sessioninfo';
 import { stringify, parse } from 'querystring';
-import { GetTitlesResponse } from 'src/models/gettitlesresponse';
 import { http, IHttpResponse } from 'src/shared/http';
+import { LoginResult } from 'src/models/loginresult';
+import { TitleResult } from 'src/models/titleresult';
 
 @Injectable()
 export class SessionProvider {
@@ -113,7 +113,7 @@ export class SessionProvider {
       headers: { 'Content-Type': 'application/json' },
     };
 
-    const getTitlesResponse: GetTitlesResponse = await (
+    const getTitlesResponse: TitleResult = await (
         await fetch(`${globalVars.baseUrl}gettitles?session=${this.sessionInfo.session}&index=1&count=1`, requestOptions)
       )
       .json()
