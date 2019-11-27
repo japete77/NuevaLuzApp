@@ -1,0 +1,26 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Atrás"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Detalle</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="!loading">
+    <ion-card>
+        <ion-card-header >
+            <b>{{detail.Title}}</b>
+            <div>{{detail.Author.Name}}</div>
+            <div>Duraci&oacute;n: {{detail.LengthHours}} horas {{detail.LengthMins}} minutos</div>
+        </ion-card-header>
+    </ion-card>
+    <ion-card>
+        <ion-card-content>
+            {{detail.Comments}}
+        </ion-card-content>
+    </ion-card>
+    <div class="ion-padding">
+        <ion-button expand="full" mode="ios" fill="solid" color="primary" (click)="download()">Descargar</ion-button>
+    </div>
+</ion-content>

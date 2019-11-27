@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Atrás"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Acceso audioteca</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-item>
+            <ion-label>Usuario</ion-label>
+            <ion-input type="text" [(ngModel)]="username"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Contraseña</ion-label>
+            <ion-input type="password" [(ngModel)]="password"></ion-input>
+        </ion-item>
+    </ion-list>
+    <div class="ion-padding">
+        <ion-button expand="full" mode="ios" fill="solid" color="primary" (click)="login()">Entrar</ion-button>
+    </div>
+</ion-content>

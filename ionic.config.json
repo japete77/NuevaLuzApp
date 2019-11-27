@@ -1,0 +1,7 @@
+{
+  "name": "NuevaLuzApp",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
