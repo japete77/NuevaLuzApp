@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="io.ionic.nuevaluz" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>MyApp</name>
-    <description>An awesome Ionic/Cordova app.</description>
-    <author email="hi@ionicframework.com" href="http://ionicframework.com/">Ionic Framework Team</author>
+    <name>Audioteca Nueva Luz</name>
+    <description>App de acceso a la audioteca de Nueva Luz</description>
+    <author email="nueva.luz.desarrollo@gmail.com" href="http://www.nuevaluz.org/">Nueva Luz Desarrollo</author>
     <content src="index.html" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
