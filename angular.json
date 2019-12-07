@@ -14,6 +14,8 @@
         "build": {
           "builder": "ngx-build-plus:browser",
           "options": {
+            "evalSourceMap": true,
+            "plugin": "~build-customization-plugin.js",
             "outputPath": "www",
             "index": "src/index.html",
             "main": "src/main.ts",

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { AlertController } from '@ionic/angular';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { SessionProvider } from 'src/providers/session/session';
 import { SessionInfo } from 'src/models/sessioninfo';
@@ -16,8 +16,17 @@ export class LoginPage {
 
     constructor(
         private router: Router,
+        private activatedRoute: ActivatedRoute,
         private session: SessionProvider,
         private alert: AlertController) {
+
+        const sessionInfo = this.session.getSessionInfo();
+
+        if (sessionInfo.username && sessionInfo.password) {
+            this.username = sessionInfo.username;
+            this.password = sessionInfo.password;
+            this.login();
+        }
     }
 
     public async login(): Promise<void> {
@@ -40,7 +49,10 @@ export class LoginPage {
         // check we have a valid session token
         if (result.session !== '') {
             // redirect to audiolibrary...
-            this.router.navigateByUrl('home');
+            this.router.navigateByUrl(
+                this.activatedRoute.snapshot.queryParams.redirectUrl,
+                { replaceUrl: true }
+            );
         }
     }
 }

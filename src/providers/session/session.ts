@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { File } from '@ionic-native/file/ngx';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
+import { Storage } from '@ionic/storage';
 import * as globalVars from '../../globals';
 import { SessionInfo } from '../../models/sessioninfo';
 import { stringify, parse } from 'querystring';
@@ -13,29 +14,46 @@ import { TitleResult } from 'src/models/titleresult';
 export class SessionProvider {
 
   private initialized: boolean;
-  private sessionInfo: SessionInfo = new SessionInfo();
-  private sessionStatusFilename = 'status.json';
+  private sessionInfo: SessionInfo;
+  private sesionKey = 'session_info';
 
   constructor(private file: File,
               private loadingCtrl: LoadingController,
-              private alert: AlertController) {
+              private alert: AlertController,
+              private storage: Storage) {
 
     this.initialized = false;
+
+    this.sessionInfo = {
+      currentBook: null,
+      password: null,
+      playDir: null,
+      session: null,
+      username: null,
+      workingDir: null
+    };
+
+    this.initialize().then(result => {
+      this.initialized = result;
+    });
   }
 
-  public async isReady(): Promise<boolean> {
-    if (this.initialized) {
+  public isInitialized(): boolean {
+    return this.initialized;
+  }
+
+  public async initialize(): Promise<boolean> {
+    const session = await this.loadSession();
+    if (session) {
+      this.sessionInfo = session;
       return true;
     } else {
-      const session = await this.loadSession();
-      if (session) {
-        this.sessionInfo = session;
-        this.initialized = true;
-        return true;
-      } else {
-        return false;
-      }
+      return false;
     }
+  }
+
+  public getSessionInfo(): SessionInfo {
+    return this.sessionInfo;
   }
 
   async login(username: number, pass: string): Promise<SessionInfo> {
@@ -84,7 +102,7 @@ export class SessionProvider {
     }
 
     try {
-      const resultSave = await this.saveSession();
+      await this.saveSession(this.sessionInfo);
     } catch {
       console.log('Error guardando la sesión de usuario.');
     }
@@ -106,75 +124,18 @@ export class SessionProvider {
     }
   }
 
-  public async isSessionValid(): Promise<number> {
-
-    const requestOptions = {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-    };
-
-    const getTitlesResponse: TitleResult = await (
-        await fetch(`${globalVars.baseUrl}gettitles?session=${this.sessionInfo.session}&index=1&count=1`, requestOptions)
-      )
-      .json()
-      .catch(error => {
-        this.alert.create({
-          header: 'Aviso',
-          subHeader: 'Biblioteca de audio libros fuera de servicio.',
-          buttons: ['OK']
-        }).then(alert => alert.present());
-      });
-
-    return globalVars.LOGIN_OK;
-    // if (getTitlesResponse.GetTitlesResult) {
-    //   return globalVars.LOGIN_OK;
-    // } else if (response.status === globalVars.HTTP_NOT_FOUND) {
-    //     return globalVars.SERVICE_UNAVAILABLE;
-    // } else if (response.status === globalVars.HTTP_NOT_ALLOWED) {
-    //   // retry login just in case the session has expired
-    //   const loginResponse = await this.login(this.sessionInfo.username, this.sessionInfo.password)
-    //   if (loginResponse) {
-    //     this.sessionInfo = loginResponse;
-    //     return globalVars.LOGIN_OK;
-    //   } else {
-    //     return globalVars.LOGIN_FAILED;
-    //   }
-    // }
-  }
-
   private async loadSession(): Promise<SessionInfo> {
-    const data = await this.file.readAsBinaryString(this.file.dataDirectory, this.sessionStatusFilename);
-    return data ? JSON.parse(data) : null;
+    return await this.storage.get('session_info');
   }
 
-  public async saveSession(): Promise<boolean> {
-    const checkFileResponse = await this.file.checkFile(this.file.dataDirectory, this.sessionStatusFilename);
-
-    if (checkFileResponse) {
-      await this.file.removeFile(this.file.dataDirectory, this.sessionStatusFilename);
-
-      const writeFileResponse = await this.file.writeFile(
-        this.file.dataDirectory,
-        this.sessionStatusFilename,
-        JSON.stringify(this.sessionInfo),
-        {
-          replace: true,
-          append: false,
-        }
-      );
-
-      if (writeFileResponse) {
-        return true;
-      }
-    }
-    return false;
+  public async saveSession(session: SessionInfo): Promise<any> {
+    await this.storage.set('session_info', session);
+    this.sessionInfo = session;
   }
 
-  public async clearSessionInfo(): Promise<boolean> {
-    this.sessionInfo.username = null;
-    this.sessionInfo.password = '';
-    this.sessionInfo.session = '';
-    return await this.saveSession();
+  public async clearSessionInfo(): Promise<any> {
+    this.sessionInfo = null;
+    await this.storage.remove('session_info');
   }
 }
 

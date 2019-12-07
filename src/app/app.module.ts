@@ -5,6 +5,7 @@ import { RouteReuseStrategy, Routes, RouterModule } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { IonicStorageModule } from '@ionic/storage';
 
 import { AppComponent } from './app.component';
 import { LoginPage } from 'src/pages/login/login.page';
@@ -16,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { SessionProvider } from 'src/providers/session/session';
 import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
 import { File } from '@ionic-native/file/ngx';
+import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { SecureAccess } from 'src/shared/secure.access';
 import { BookDetailsPage } from 'src/pages/bookdetails/bookdetails';
 import { ByAuthorPage } from 'src/pages/byauthor/byauthor';
@@ -51,7 +53,8 @@ const routes: Routes = [
     IonicModule,
     BrowserModule,
     IonicModule.forRoot(),
-    RouterModule.forRoot(routes)
+    RouterModule.forRoot(routes),
+    IonicStorageModule.forRoot(),
   ],
   exports:  [RouterModule ],
   providers: [
@@ -59,6 +62,7 @@ const routes: Routes = [
     SplashScreen,
     SessionProvider,
     File,
+    FileTransfer,
     AudioBooksProvider,
     SecureAccess,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

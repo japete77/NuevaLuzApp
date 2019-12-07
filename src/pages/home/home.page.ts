@@ -9,9 +9,6 @@ import { Platform } from '@ionic/angular';
 export class HomePage {
 
   constructor(private router: Router, public platform: Platform) {
-    platform.ready().then(result => {
-      console.log(`Ready platform: ${result}`);
-    });
   }
 
   async gotoAudioLibrary() {
@@ -19,13 +16,14 @@ export class HomePage {
   }
 
   gotoAudioBooks() {
-    // this.navCtrl.push(AudioBooksPage);
+    // this.router.navigateByUrl(`audiobooks`);
   }
 
   gotoNotifications() {
+    // this.router.navigateByUrl(`notifications`);
   }
 
   gotoConfiguration() {
-    // this.navCtrl.push(ConfigurationPage);
+    // this.router.navigateByUrl(`configuration`);
   }
 }

@@ -3,6 +3,7 @@ import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
 import { Router } from '@angular/router';
 import { AuthorsResult } from 'src/models/authorsresult';
 import { Author } from 'src/models/authors';
+import { SessionProvider } from 'src/providers/session/session';
 
 @Component({
   selector: 'page-byauthor',
@@ -26,6 +27,9 @@ export class ByAuthorPage {
   private filterText = '';
 
   loadMore() {
+
+    this.loading = true;
+
     if (this.filterText !== '') {
       this.audiobooks.SearchAuthors(this.filterText, this.index, this.pageSize)
         .then((value: AuthorsResult) => {
@@ -36,6 +40,7 @@ export class ByAuthorPage {
             this.authors.push(element);
           });
 
+          this.loading = false;
         });
     } else {
 
@@ -47,6 +52,8 @@ export class ByAuthorPage {
           value.Authors.forEach(element => {
             this.authors.push(element);
           });
+
+          this.loading = false;
 
         });
     }
