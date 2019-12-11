@@ -22,6 +22,9 @@ import { SecureAccess } from 'src/shared/secure.access';
 import { BookDetailsPage } from 'src/pages/bookdetails/bookdetails';
 import { ByAuthorPage } from 'src/pages/byauthor/byauthor';
 import { TitlesByAuthorPage } from 'src/pages/titlesbyauthor/titlesbyauthor';
+import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
+import { Zip } from '@ionic-native/zip/ngx';
+import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -64,7 +67,10 @@ const routes: Routes = [
     File,
     FileTransfer,
     AudioBooksProvider,
+    AudioBookStore,
+    Zip,
     SecureAccess,
+    Diagnostic,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent]

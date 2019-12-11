@@ -25,10 +25,12 @@ export class AppComponent {
   initializeApp() {
     this.platform.ready().then((platform) => {
       console.log(`The platform is ready: ${platform}`);
+
       if (this.platform.is('android')) {
-        console.log('Is Android');
+        console.log('Device Android');
+      } else if (this.platform.is('ios')) {
+        console.log('Device iOS');
       }
-      console.log(this.file);
       this.statusBar.styleDefault();
       this.splashScreen.hide();
     });

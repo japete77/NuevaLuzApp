@@ -13,6 +13,7 @@ export class LoginPage {
 
     username;
     password;
+    verifying = false;
 
     constructor(
         private router: Router,
@@ -43,14 +44,18 @@ export class LoginPage {
             return;
         }
 
+        this.verifying = true;
+
         // try to login
         const result: SessionInfo = await this.session.login(userInt, this.password);
+
+        this.verifying = false;
 
         // check we have a valid session token
         if (result.session !== '') {
             // redirect to audiolibrary...
             this.router.navigateByUrl(
-                this.activatedRoute.snapshot.queryParams.redirectUrl,
+                '/audiolibrary',
                 { replaceUrl: true }
             );
         }

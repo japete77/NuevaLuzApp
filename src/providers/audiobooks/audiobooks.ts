@@ -8,6 +8,7 @@ import { TitleResult } from 'src/models/titleresult';
 import { AudioBookDetailResult } from 'src/models/audiobookdetailresult';
 import { AuthorsResult } from 'src/models/authorsresult';
 import { Router } from '@angular/router';
+import { AudioBookLinkResult } from 'src/models/audiobooklinkresult';
 
 @Injectable()
 export class AudioBooksProvider {
@@ -52,6 +53,14 @@ export class AudioBooksProvider {
 
   public async GetTitlesFiltered(index: number, count: number, filter: string): Promise<TitleResult> {
     return await this.Get<TitleResult>('GetTitlesFiltered', '', index, count, filter);
+  }
+
+  public async GetAudioBookLink(id: string): Promise<AudioBookLinkResult> {
+    await this.session.initialize();
+
+    const queryUrl = globalVars.baseUrl + 'getaudiobooklink?session=' + this.session.getSession() + '&id=' + id;
+
+    return await this.GetByQuery<AudioBookLinkResult>(queryUrl);
   }
 
   public async GetBookDetail(id: string): Promise<AudioBookDetailResult> {
