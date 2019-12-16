@@ -49,6 +49,7 @@
     "@angular/compiler-cli": "~8.1.2",
     "@angular/language-service": "~8.1.2",
     "@ionic/angular-toolkit": "^2.1.1",
+    "@ionic/lab": "2.0.18",
     "@types/jasmine": "~3.3.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "~8.9.4",
@@ -74,7 +75,6 @@
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
-      "cordova-plugin-file": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
@@ -83,8 +83,9 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-ionic-keyboard": {},
-      "cordova-plugin-file-transfer": {},
       "cordova-plugin-zip": {},
+      "cordova-plugin-file": {},
+      "cordova-plugin-file-transfer": {},
       "cordova.plugins.diagnostic": {
         "ANDROID_SUPPORT_VERSION": "28.+"
       }

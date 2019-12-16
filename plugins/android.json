@@ -10,9 +10,6 @@
     "cordova-plugin-device": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
-    "cordova-plugin-file": {
-      "PACKAGE_NAME": "io.ionic.nuevaluz"
-    },
     "cordova-plugin-file-transfer": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
@@ -40,5 +37,9 @@
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     }
   },
-  "dependent_plugins": {}
+  "dependent_plugins": {
+    "cordova-plugin-file": {
+      "PACKAGE_NAME": "io.ionic.nuevaluz"
+    }
+  }
 }
