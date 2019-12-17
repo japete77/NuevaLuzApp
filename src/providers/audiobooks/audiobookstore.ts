@@ -36,6 +36,8 @@ export class AudioBookStore {
         private diagnostic: Diagnostic,
         private zip: Zip) {
 
+            this.dataDir = this.file.externalDataDirectory;
+
             this.platform.ready().then(() => {
 
                 // check storage location
@@ -121,10 +123,16 @@ export class AudioBookStore {
         );
 
         // clean up .zip file
-        await this.file.removeFile(`file://${this.dataDir}`, this.currentAudioBook.filename);
+        await this.file.removeFile(`${this.dataDir}`, `${this.currentAudioBook.id}.zip`);
 
         // move dir to final location
-        const entries = await this.file.listDir(`file://${this.dataDir}`, tmpFolder);
+        const entries = await this.file.listDir(`${this.dataDir}`, tmpFolder);
+        if (entries[0].isDirectory) {
+            await this.file.moveDir(`${this.dataDir}${tmpFolder}`, entries[0].name, `${this.dataDir}`, `${this.currentAudioBook.id}`);
+        }
+
+        // remove tmp folder
+        await this.file.removeDir(this.dataDir, tmpFolder);
 
         this.currentAudioBook.statusKey = STATUS_COMPLETED;
         this.currentAudioBook.statusDescription = `Completado`;
@@ -150,6 +158,10 @@ export class AudioBookStore {
         this.audioBooks.push(newItem);
 
         await this.processDownloadQueue();
+    }
+
+    async cancel() {
+        await this.fileTransfer.abort();
     }
 
     getMyAudioBooks(): Array<MyAudioBook> {

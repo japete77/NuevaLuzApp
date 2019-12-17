@@ -10,7 +10,7 @@
 <ion-content *ngIf="!loading">
     <ion-card>
         <ion-card-header >
-            <b>{{detail.Title}}</b>
+            <h5>{{detail.Title}}</h5>
             <div>{{detail.Author.Name}}</div>
             <div>Duraci&oacute;n: {{detail.LengthHours}} horas {{detail.LengthMins}} minutos</div>
         </ion-card-header>
@@ -20,7 +20,15 @@
             {{detail.Comments}}
         </ion-card-content>
     </ion-card>
-    <div class="ion-padding">
+    <div *ngIf="downloading">
+        <ion-item class="ion-text-center">
+            <ion-label>{{downloadStatus}}</ion-label>
+        </ion-item>
+        <div [hidden]="installing">
+            <ion-button expand="full" mode="ios" fill="solid" color="danger" (click)="cancel()">Cancelar</ion-button>
+        </div>
+    </div>
+    <div [hidden]="downloading" class="ion-padding">
         <ion-button expand="full" mode="ios" fill="solid" color="primary" (click)="download()">Descargar</ion-button>
     </div>
 </ion-content>

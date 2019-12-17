@@ -1,28 +1,30 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { NavController, NavParams, LoadingController, AlertController } from '@ionic/angular';
-
-import { SessionProvider } from 'src/providers/session/session';
-import { SessionInfo } from 'src/models/sessioninfo';
+import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
 import { AudioBookDetailResult } from 'src/models/audiobookdetailresult';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 import { MyAudioBook } from 'src/models/myaudiobook';
+import { ChangeDetectorRef } from '@angular/core'
+import { STATUS_INSTALLING } from 'src/globals';
 
 @Component({
   selector: 'page-bookdetails',
   templateUrl: 'bookdetails.html',
 })
-export class BookDetailsPage implements OnInit, OnDestroy {
+export class BookDetailsPage implements OnInit {
 
     detail: AudioBookDetailResult;
 
     loading = true;
+    downloading = false;
+    installing = false;
+    downloadStatus = "";
 
     constructor(private router: Router,
                 private activatedRoute: ActivatedRoute,
                 private audioBooksProvider: AudioBooksProvider,
-                private audioBookStore: AudioBookStore
+                private audioBookStore: AudioBookStore,
+                private changeRef: ChangeDetectorRef
                 ) {
 
   }
@@ -37,17 +39,29 @@ export class BookDetailsPage implements OnInit, OnDestroy {
       }
     );
 
-    this.audioBookStore.audioBookEvent.subscribe(this.onDownloadProgress);
+    this.audioBookStore.audioBookEvent.subscribe((audioBook: MyAudioBook) => {
+      this.downloadStatus = audioBook.statusDescription;
+      this.installing = audioBook.statusKey == STATUS_INSTALLING;
+      this.changeRef.detectChanges();
+    });
   }
 
-  ngOnDestroy(): void {
+  async download() {
+    try {
+      this.downloading = true;
+      this.downloadStatus = "Iniciando descarga";
+      await this.audioBookStore.download(this.detail.Id, this.detail.Title);
+    } catch (error) {
+      this.downloadStatus = error;
+    } finally {
+      this.downloading = false;  
+      this.installing = false;
+    }
   }
 
-  onDownloadProgress(audioBook: MyAudioBook) {
-    console.log(audioBook.statusDescription);
-  }
-
-  download() {
-    this.audioBookStore.download(this.detail.Id, this.detail.Title);
+  async cancel() {
+    await this.audioBookStore.cancel();
+    this.downloading = false;
+    this.installing = false;
   }
 }
