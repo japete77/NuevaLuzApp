@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
-import { AudioBook } from 'src/models/audiobook';
-import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
+import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { MyAudioBook } from 'src/models/myaudiobook';
 import { Subject } from 'rxjs';
@@ -25,8 +24,9 @@ export class AudioBookStore {
     private fileTransfer: FileTransferObject;
     private currentAudioBook: MyAudioBook;
     private dataDir: string;
+    private processingDownload = false;
 
-    public audioBookEvent = this.audioBookSource.asObservable();
+    public audioBookEvent = this.audioBookSource;
 
     constructor(
         private audioBooksProvider: AudioBooksProvider,
@@ -36,6 +36,7 @@ export class AudioBookStore {
         private diagnostic: Diagnostic,
         private zip: Zip) {
 
+            // TODO: Check SDCard location
             this.dataDir = this.file.externalDataDirectory;
 
             this.platform.ready().then(() => {
@@ -82,6 +83,10 @@ export class AudioBookStore {
     }
 
     async processDownloadQueue(): Promise<void> {
+        if (this.processingDownload) return;
+        
+        this.processingDownload = true;
+        
         this.currentAudioBook = this.getNextDownloadItem();
 
         if (!this.currentAudioBook) { return null; }
@@ -139,6 +144,7 @@ export class AudioBookStore {
         this.audioBookSource.next(this.currentAudioBook);
 
         // process next
+        this.processingDownload = false;
         await this.processDownloadQueue();
     }
 
@@ -160,11 +166,25 @@ export class AudioBookStore {
         await this.processDownloadQueue();
     }
 
-    async cancel() {
-        await this.fileTransfer.abort();
+    async cancel(id: string) {        
+        const index = this.audioBooks.findIndex(value => value.id == id);
+        if (index > -1) {
+            this.audioBooks.splice(index, 1);
+        }
+
+        if (this.currentAudioBook.id == id) {            
+            await this.fileTransfer.abort(); 
+            this.processingDownload = false;           
+        }
+
+        await this.processDownloadQueue();
     }
 
     getMyAudioBooks(): Array<MyAudioBook> {
         return this.audioBooks;
+    }
+
+    getMyAudioBook(id: string) : MyAudioBook {
+        return this.audioBooks.find(value => value.id == id);        
     }
 }

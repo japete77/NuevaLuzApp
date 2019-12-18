@@ -20,15 +20,15 @@
             {{detail.Comments}}
         </ion-card-content>
     </ion-card>
-    <div *ngIf="downloading">
+    <div *ngIf="downloading || installing || pending">
         <ion-item class="ion-text-center">
             <ion-label>{{downloadStatus}}</ion-label>
         </ion-item>
-        <div [hidden]="installing">
+        <div *ngIf="downloading || pending">
             <ion-button expand="full" mode="ios" fill="solid" color="danger" (click)="cancel()">Cancelar</ion-button>
         </div>
     </div>
-    <div [hidden]="downloading" class="ion-padding">
+    <div [hidden]="downloading || pending || installing" class="ion-padding">
         <ion-button expand="full" mode="ios" fill="solid" color="primary" (click)="download()">Descargar</ion-button>
     </div>
 </ion-content>
