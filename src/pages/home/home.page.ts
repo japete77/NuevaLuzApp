@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform } from '@ionic/angular';
+import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 
 @Component({
   selector: 'page-home',
@@ -8,7 +9,7 @@ import { Platform } from '@ionic/angular';
 })
 export class HomePage {
 
-  constructor(private router: Router, public platform: Platform) {
+  constructor(private router: Router, public platform: Platform, private store: AudioBookStore) {
   }
 
   async gotoAudioLibrary() {

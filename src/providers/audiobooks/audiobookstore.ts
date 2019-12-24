@@ -7,6 +7,8 @@ import { Subject } from 'rxjs';
 import { Platform } from '@ionic/angular';
 import { Zip } from '@ionic-native/zip/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { AudioBookDetailResult } from 'src/models/audiobookdetailresult';
+import { Storage } from '@ionic/storage';
 
 export const STATUS_PENDING = 'pending';
 export const STATUS_DOWNLOADING = 'downloading';
@@ -25,6 +27,7 @@ export class AudioBookStore {
     private currentAudioBook: MyAudioBook;
     private dataDir: string;
     private processingDownload = false;
+    private audioBooksKey = 'audiobooks';
 
     public audioBookEvent = this.audioBookSource;
 
@@ -34,7 +37,14 @@ export class AudioBookStore {
         private file: File,
         private platform: Platform,
         private diagnostic: Diagnostic,
-        private zip: Zip) {
+        private zip: Zip,
+        private storage: Storage) {
+
+            this.loadBooks().then(data => {
+                if (data) {
+                    this.audioBooks = JSON.parse(data);
+                }
+            });
 
             // TODO: Check SDCard location
             this.dataDir = this.file.externalDataDirectory;
@@ -89,13 +99,16 @@ export class AudioBookStore {
         
         this.currentAudioBook = this.getNextDownloadItem();
 
-        if (!this.currentAudioBook) { return null; }
+        if (!this.currentAudioBook) { 
+            this.processingDownload = false;
+            return null; 
+        }
 
         // get link
-        const link = await this.audioBooksProvider.GetAudioBookLink(this.currentAudioBook.id);
+        const link = await this.audioBooksProvider.GetAudioBookLink(this.currentAudioBook.book.Id);
 
         // download file
-        const zipFile = `${this.dataDir}/${this.currentAudioBook.id}.zip`;
+        const zipFile = `${this.dataDir}/${this.currentAudioBook.book.Id}.zip`;
         await this.fileTransfer.download(
             link.AudioBookLink,
             zipFile
@@ -104,11 +117,13 @@ export class AudioBookStore {
         this.currentAudioBook.statusDescription = 'Descarga completada';
         this.currentAudioBook.statusKey = STATUS_DOWNLOADED;
         this.audioBookSource.next(this.currentAudioBook);
+        await this.saveBooks();
 
         // unzip
         this.currentAudioBook.statusDescription = 'Iniciando preparación audilibro';
         this.currentAudioBook.statusKey = STATUS_INSTALLING;
         this.audioBookSource.next(this.currentAudioBook);
+        await this.saveBooks();
 
         const d = new Date();
         const  tmpFolder = d.getTime().toString();
@@ -128,12 +143,12 @@ export class AudioBookStore {
         );
 
         // clean up .zip file
-        await this.file.removeFile(`${this.dataDir}`, `${this.currentAudioBook.id}.zip`);
+        await this.file.removeFile(`${this.dataDir}`, `${this.currentAudioBook.book.Id}.zip`);
 
         // move dir to final location
         const entries = await this.file.listDir(`${this.dataDir}`, tmpFolder);
         if (entries[0].isDirectory) {
-            await this.file.moveDir(`${this.dataDir}${tmpFolder}`, entries[0].name, `${this.dataDir}`, `${this.currentAudioBook.id}`);
+            await this.file.moveDir(`${this.dataDir}${tmpFolder}`, entries[0].name, `${this.dataDir}`, `${this.currentAudioBook.book.Id}`);
         }
 
         // remove tmp folder
@@ -143,18 +158,19 @@ export class AudioBookStore {
         this.currentAudioBook.statusDescription = `Completado`;
         this.audioBookSource.next(this.currentAudioBook);
 
+        await this.saveBooks();
+
         // process next
         this.processingDownload = false;
         await this.processDownloadQueue();
     }
 
-    async download(id: string, title: string) {
+    async download(book: AudioBookDetailResult) {
         // add new element to the queue
         const newItem: MyAudioBook = {
-            id,
-            title,
+            book: book,
             path: this.file.dataDirectory,
-            filename: `${id}.zip`,
+            filename: `${book.Id}.zip`,
             progress: 0,
             statusDescription: 'Pendiente de descarga',
             errorCode: 0,
@@ -163,18 +179,26 @@ export class AudioBookStore {
 
         this.audioBooks.push(newItem);
 
+        await this.saveBooks();
+
         await this.processDownloadQueue();
     }
 
     async cancel(id: string) {        
-        const index = this.audioBooks.findIndex(value => value.id == id);
+        const index = this.audioBooks.findIndex(value => value.book.Id == id);
         if (index > -1) {
             this.audioBooks.splice(index, 1);
+            await this.saveBooks();
         }
 
-        if (this.currentAudioBook.id == id) {            
-            await this.fileTransfer.abort(); 
-            this.processingDownload = false;           
+        if (this.currentAudioBook && 
+            this.currentAudioBook.book.Id == id) {
+
+            this.processingDownload = false;
+
+            if (this.currentAudioBook.statusKey == STATUS_DOWNLOADING) {            
+                await this.fileTransfer.abort();
+            } 
         }
 
         await this.processDownloadQueue();
@@ -185,6 +209,14 @@ export class AudioBookStore {
     }
 
     getMyAudioBook(id: string) : MyAudioBook {
-        return this.audioBooks.find(value => value.id == id);        
+        return this.audioBooks.find(value => value.book.Id == id);        
+    }
+
+    private saveBooks() : Promise<any> {
+        return this.storage.set(this.audioBooksKey, JSON.stringify(this.audioBooks));
+    }
+
+    private loadBooks() : Promise<any> {
+        return  this.storage.get(this.audioBooksKey);
     }
 }

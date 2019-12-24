@@ -5,7 +5,7 @@ import { AudioBookDetailResult } from 'src/models/audiobookdetailresult';
 import { AudioBookStore, STATUS_COMPLETED } from 'src/providers/audiobooks/audiobookstore';
 import { MyAudioBook } from 'src/models/myaudiobook';
 import { ChangeDetectorRef } from '@angular/core'
-import { STATUS_INSTALLING, STATUS_DOWNLOADING, STATUS_PENDING } from 'src/globals';
+import { STATUS_INSTALLING, STATUS_DOWNLOADING, STATUS_PENDING, STATUS_ERROR } from 'src/globals';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -21,6 +21,8 @@ export class BookDetailsPage implements OnInit, OnDestroy {
     downloading = false;
     installing = false;
     pending = false;
+    available = false;
+    error = false;
     downloadStatus = "";
 
     subscription: Subscription;
@@ -31,37 +33,47 @@ export class BookDetailsPage implements OnInit, OnDestroy {
                 private audioBookStore: AudioBookStore,
                 private changeRef: ChangeDetectorRef
                 ) {
-
   }
 
   ngOnInit(): void {
     this.loading = true;
+    this.changeRef.detectChanges();
 
     this.id = this.activatedRoute.snapshot.params.id;
 
-    console.log(`OnInit ${this.id}`);
+    let myAudioBook = this.audioBookStore.getMyAudioBook(this.id);
     
-    this.audioBooksProvider.GetBookDetail(this.id)
-      .then((result: AudioBookDetailResult) => {
-          this.detail = result;
-          this.loading = false;
-      }
-    );
-
-    const myAudioBook = this.audioBookStore.getMyAudioBook(this.id);
     if (myAudioBook) {
+      this.detail = myAudioBook.book;
       this.pending = myAudioBook.statusKey == STATUS_PENDING;
-      this.downloadStatus = "Pendiente de descarga";
-      console.log("OnInit: Pendiente descarga");
-    }
+      this.downloading = myAudioBook.statusKey == STATUS_DOWNLOADING;
+      this.installing = myAudioBook.statusKey == STATUS_INSTALLING;
+      this.available = myAudioBook.statusKey == STATUS_COMPLETED;
+      this.error = myAudioBook.statusKey == STATUS_ERROR;
 
+      if (this.pending) {
+        this.downloadStatus = "Pendiente de descarga";
+      }
+
+      this.loading = false;
+
+    } else {
+      this.audioBooksProvider.GetBookDetail(this.id)
+        .then((result: AudioBookDetailResult) => {
+            this.detail = result;
+            this.loading = false;
+        }
+      );
+    }
+    
     this.subscription = this.audioBookStore.audioBookEvent.subscribe((audioBook: MyAudioBook) => {
-      if (this.id == audioBook.id) {                
+      if (this.id == audioBook.book.Id) {                
         this.downloadStatus = audioBook.statusDescription;
         this.pending = false;
         
         if (audioBook.statusKey == STATUS_COMPLETED) {
           this.pending = this.downloading = this.installing = false;
+          this.available = true;
         } else {
           this.downloading = audioBook.statusKey == STATUS_DOWNLOADING;
           this.installing = audioBook.statusKey == STATUS_INSTALLING;  
@@ -73,7 +85,6 @@ export class BookDetailsPage implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    console.log(`OnDestroy ${this.id}`);
     this.subscription.unsubscribe();
   }
 
@@ -82,7 +93,7 @@ export class BookDetailsPage implements OnInit, OnDestroy {
       this.pending = true;
       this.downloadStatus = "Pendiente de descarga";
       this.changeRef.detectChanges();
-      await this.audioBookStore.download(this.detail.Id, this.detail.Title);
+      await this.audioBookStore.download(this.detail);
     } catch (error) {
       this.downloadStatus = error;
     }
@@ -94,5 +105,9 @@ export class BookDetailsPage implements OnInit, OnDestroy {
     this.installing = false;
     this.pending = false;
     this.changeRef.detectChanges();
+  }
+
+  async play() {
+    // navigate to play audiobook
   }
 }

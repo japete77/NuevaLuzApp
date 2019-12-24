@@ -1,14 +1,11 @@
 import { Injectable } from '@angular/core';
-import { File } from '@ionic-native/file/ngx';
 import { AlertController } from '@ionic/angular';
 import { LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import * as globalVars from '../../globals';
 import { SessionInfo } from '../../models/sessioninfo';
-import { stringify, parse } from 'querystring';
 import { http, IHttpResponse } from 'src/shared/http';
 import { LoginResult } from 'src/models/loginresult';
-import { TitleResult } from 'src/models/titleresult';
 
 @Injectable()
 export class SessionProvider {
@@ -17,8 +14,7 @@ export class SessionProvider {
   private sessionInfo: SessionInfo;
   private sesionKey = 'session_info';
 
-  constructor(private file: File,
-              private loadingCtrl: LoadingController,
+  constructor(private loadingCtrl: LoadingController,
               private alert: AlertController,
               private storage: Storage) {
 
@@ -125,17 +121,17 @@ export class SessionProvider {
   }
 
   private async loadSession(): Promise<SessionInfo> {
-    return await this.storage.get('session_info');
+    return await this.storage.get(this.sesionKey);
   }
 
   public async saveSession(session: SessionInfo): Promise<any> {
-    await this.storage.set('session_info', session);
+    await this.storage.set(this.sesionKey, session);
     this.sessionInfo = session;
   }
 
   public async clearSessionInfo(): Promise<any> {
     this.sessionInfo = null;
-    await this.storage.remove('session_info');
+    await this.storage.remove(this.sesionKey);
   }
 }
 

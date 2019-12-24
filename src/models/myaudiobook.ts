@@ -1,8 +1,7 @@
-import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
+import { AudioBookDetailResult } from './audiobookdetailresult';
 
 export class MyAudioBook {
-    id: string;
-    title: string;
+    book: AudioBookDetailResult;
     path: string;
     filename: string;
     progress: number;
