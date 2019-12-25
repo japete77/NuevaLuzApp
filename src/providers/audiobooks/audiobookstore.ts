@@ -43,6 +43,8 @@ export class AudioBookStore {
             this.loadBooks().then(data => {
                 if (data) {
                     this.audioBooks = JSON.parse(data);
+
+                    this.cleanUp();
                 }
             });
 
@@ -122,11 +124,11 @@ export class AudioBookStore {
         // unzip
         this.currentAudioBook.statusDescription = 'Iniciando preparación audilibro';
         this.currentAudioBook.statusKey = STATUS_INSTALLING;
-        this.audioBookSource.next(this.currentAudioBook);
-        await this.saveBooks();
-
         const d = new Date();
         const  tmpFolder = d.getTime().toString();
+        this.currentAudioBook.tmpFolder = tmpFolder;
+        this.audioBookSource.next(this.currentAudioBook);
+        await this.saveBooks();
 
         await this.zip.unzip(zipFile, this.dataDir + '/' + tmpFolder,
             (event: ProgressEvent) => {
@@ -171,6 +173,7 @@ export class AudioBookStore {
             book: book,
             path: this.file.dataDirectory,
             filename: `${book.Id}.zip`,
+            tmpFolder: null,
             progress: 0,
             statusDescription: 'Pendiente de descarga',
             errorCode: 0,
@@ -218,5 +221,42 @@ export class AudioBookStore {
 
     private loadBooks() : Promise<any> {
         return  this.storage.get(this.audioBooksKey);
+    }
+
+    private cleanUp() {
+        // Calculate books to delete
+        const toDelete = this.audioBooks.filter(value => value.statusKey != STATUS_COMPLETED);
+        
+        // Update books with a valid status
+        this.audioBooks = this.audioBooks.filter(value => value.statusKey == STATUS_COMPLETED);
+        this.saveBooks();
+
+        // Clean up folders
+        toDelete.forEach(item => {
+            if (item.path) {
+                console.log("Check zip");
+                this.file.checkFile(this.dataDir, item.filename)
+                    .then(result => {
+                        console.log(`Checked zip: ${result}`);
+                        if (result) this.file.removeFile(this.dataDir, item.filename);
+                    });
+                
+                console.log("Check book folder");
+                this.file.checkDir(this.dataDir, item.book.Id)
+                    .then(result => {
+                        console.log(`Checked book folder: ${result}`);
+                        if (result) this.file.removeRecursively(this.dataDir, item.book.Id);
+                    });
+
+                if (item.tmpFolder) {
+                    console.log("Check tmp folder");
+                    this.file.checkDir(this.dataDir, item.tmpFolder)
+                        .then(result => {
+                            console.log(`Checked tmp folder: ${result}`);
+                            if (result) this.file.removeRecursively(this.dataDir, item.tmpFolder);
+                        });
+                }
+            }
+        });
     }
 }
