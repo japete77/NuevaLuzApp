@@ -171,7 +171,7 @@ export class AudioBookStore {
         // add new element to the queue
         const newItem: MyAudioBook = {
             book: book,
-            path: this.file.dataDirectory,
+            path: this.dataDir,
             filename: `${book.Id}.zip`,
             tmpFolder: null,
             progress: 0,
@@ -234,25 +234,19 @@ export class AudioBookStore {
         // Clean up folders
         toDelete.forEach(item => {
             if (item.path) {
-                console.log("Check zip");
                 this.file.checkFile(this.dataDir, item.filename)
                     .then(result => {
-                        console.log(`Checked zip: ${result}`);
                         if (result) this.file.removeFile(this.dataDir, item.filename);
                     });
                 
-                console.log("Check book folder");
                 this.file.checkDir(this.dataDir, item.book.Id)
                     .then(result => {
-                        console.log(`Checked book folder: ${result}`);
                         if (result) this.file.removeRecursively(this.dataDir, item.book.Id);
                     });
 
                 if (item.tmpFolder) {
-                    console.log("Check tmp folder");
                     this.file.checkDir(this.dataDir, item.tmpFolder)
                         .then(result => {
-                            console.log(`Checked tmp folder: ${result}`);
                             if (result) this.file.removeRecursively(this.dataDir, item.tmpFolder);
                         });
                 }
