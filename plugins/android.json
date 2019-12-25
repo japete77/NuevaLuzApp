@@ -20,6 +20,9 @@
       "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+",
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
+    "cordova-plugin-media": {
+      "PACKAGE_NAME": "io.ionic.nuevaluz"
+    },
     "cordova-plugin-splashscreen": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },

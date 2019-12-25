@@ -1,12 +1,14 @@
-import { CanActivate, Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { SessionProvider } from '../providers/session/session';
+import { Injectable } from '@angular/core';
 
+@Injectable()
 export class SecureAccess implements CanActivate {
 
   constructor(private sessionProvider: SessionProvider, private router: Router) {
   }
 
-  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+  canActivate(route: ActivatedRouteSnapshot) {
 
     // tslint:disable-next-line:no-string-literal
     const redirectUrl = route['_routerState']['url'];

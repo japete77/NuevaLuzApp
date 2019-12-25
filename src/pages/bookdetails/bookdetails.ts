@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, NgZone } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
 import { AudioBookDetailResult } from 'src/models/audiobookdetailresult';
 import { AudioBookStore, STATUS_COMPLETED } from 'src/providers/audiobooks/audiobookstore';
@@ -108,6 +108,6 @@ export class BookDetailsPage implements OnInit, OnDestroy {
   }
 
   async play() {
-    // navigate to play audiobook
+    this.router.navigateByUrl(`play/${this.id}`);
   }
 }

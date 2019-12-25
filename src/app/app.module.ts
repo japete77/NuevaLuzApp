@@ -12,12 +12,13 @@ import { LoginPage } from 'src/pages/login/login.page';
 import { HomePage } from 'src/pages/home/home.page';
 import { AudioLibraryPage } from 'src/pages/audiolibrary/audiolibrary';
 import { ByTitlePage } from 'src/pages/bytitle/bytitle';
+import { PlayPage} from 'src/pages/play/play.page';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SessionProvider } from 'src/providers/session/session';
 import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
 import { File } from '@ionic-native/file/ngx';
-import { FileTransfer, FileUploadOptions, FileTransferObject } from '@ionic-native/file-transfer/ngx';
+import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { SecureAccess } from 'src/shared/secure.access';
 import { BookDetailsPage } from 'src/pages/bookdetails/bookdetails';
 import { ByAuthorPage } from 'src/pages/byauthor/byauthor';
@@ -25,6 +26,7 @@ import { TitlesByAuthorPage } from 'src/pages/titlesbyauthor/titlesbyauthor';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 import { Zip } from '@ionic-native/zip/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
+import { Media } from '@ionic-native/media/ngx';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -34,7 +36,8 @@ const routes: Routes = [
   { path: 'bytitle' , canActivate: [SecureAccess], component: ByTitlePage },
   { path: 'byauthor' , canActivate: [SecureAccess], component: ByAuthorPage },
   { path: 'titlesbyauthor/:id' , canActivate: [SecureAccess], component: TitlesByAuthorPage },
-  { path: 'bookdetails/:id', canActivate: [SecureAccess], component: BookDetailsPage }
+  { path: 'bookdetails/:id', canActivate: [SecureAccess], component: BookDetailsPage },
+  { path: 'play/:id', canActivate: [SecureAccess], component: PlayPage }
 ];
 
 @NgModule({
@@ -47,6 +50,7 @@ const routes: Routes = [
     BookDetailsPage,
     ByAuthorPage,
     TitlesByAuthorPage,
+    PlayPage,
   ],
   entryComponents: [
   ],
@@ -71,6 +75,7 @@ const routes: Routes = [
     Zip,
     SecureAccess,
     Diagnostic,
+    Media,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent]
