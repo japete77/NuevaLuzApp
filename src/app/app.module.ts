@@ -27,11 +27,13 @@ import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 import { Zip } from '@ionic-native/zip/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { Media } from '@ionic-native/media/ngx';
+import { MyAudioBooksPage } from 'src/pages/myaudiobooks/myaudiobooks';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: 'login', component: LoginPage },
   { path: 'home', component: HomePage },
+  { path: 'myaudiobooks' , component: MyAudioBooksPage },
   { path: 'audiolibrary' , canActivate: [SecureAccess], component: AudioLibraryPage },
   { path: 'bytitle' , canActivate: [SecureAccess], component: ByTitlePage },
   { path: 'byauthor' , canActivate: [SecureAccess], component: ByAuthorPage },
@@ -51,6 +53,7 @@ const routes: Routes = [
     ByAuthorPage,
     TitlesByAuthorPage,
     PlayPage,
+    MyAudioBooksPage,
   ],
   entryComponents: [
   ],

@@ -17,7 +17,7 @@ export class HomePage {
   }
 
   gotoAudioBooks() {
-    // this.router.navigateByUrl(`audiobooks`);
+    this.router.navigateByUrl(`myaudiobooks`);
   }
 
   gotoNotifications() {
