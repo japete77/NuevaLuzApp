@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { DaisyBook } from 'src/providers/daisy/daisybook';
-import { ActivatedRoute } from '@angular/router';
+import { DaisyBook, NAV_LEVEL_PHRASE, NAV_LEVEL_BOOKMARK, NAV_LEVEL_PAGE, NAV_LEVEL_INTERVAL } from 'src/providers/daisy/daisybook';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 import { File } from '@ionic-native/file/ngx';
 import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
@@ -29,7 +29,8 @@ export class PlayPage implements OnInit, OnDestroy {
         private audioBookStore: AudioBookStore,
         private file: File,
         private player: DaisyPlayer,
-        private loadingCtrl: LoadingController
+        private loadingCtrl: LoadingController,
+        private router: Router
         ) {
     }
 
@@ -117,6 +118,24 @@ export class PlayPage implements OnInit, OnDestroy {
     }
 
     getLevel() {
-        return "Nivel 1";
+        const info = this.player.getPlayerInfo();
+        if (info && info.position && info.position.navigationLevel) {
+            switch (info.position.navigationLevel) {
+                case NAV_LEVEL_PHRASE:
+                    return "Frase";
+                case NAV_LEVEL_BOOKMARK:
+                    return "Marcas";
+                case NAV_LEVEL_PAGE:
+                    return "Página";
+                case NAV_LEVEL_INTERVAL:
+                    return "Intervalo";
+                default:
+                    return `Nivel ${info.position.navigationLevel}`;
+            }
+        }
+    }
+
+    selectLevel() {
+        this.router.navigateByUrl(`levels`);
     }
 }

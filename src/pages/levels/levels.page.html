@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Atrás"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Niveles</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-list>
+        <ion-radio-group name="radio-group" #radioGroup>
+            <ion-list-header>
+                <ion-label>Selecciona el nivel de navegación</ion-label>
+            </ion-list-header>
+
+            <ion-item *ngFor="let level of levels" (ionSelect)="levelSelect($event)">
+                <ion-label>{{level.text}}</ion-label>
+                <ion-radio slot="end" value="{{level.value}}" checked="{{level.checked}}"></ion-radio>
+            </ion-item>
+
+        </ion-radio-group>
+    </ion-list>
+</ion-content>

@@ -30,6 +30,7 @@ import { Media } from '@ionic-native/media/ngx';
 import { MyAudioBooksPage } from 'src/pages/myaudiobooks/myaudiobooks';
 import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
 import { DaisyBook } from 'src/providers/daisy/daisybook';
+import { LevelsPage } from 'src/pages/levels/levels.page';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -41,7 +42,8 @@ const routes: Routes = [
   { path: 'byauthor' , canActivate: [SecureAccess], component: ByAuthorPage },
   { path: 'titlesbyauthor/:id' , canActivate: [SecureAccess], component: TitlesByAuthorPage },
   { path: 'bookdetails/:id', canActivate: [SecureAccess], component: BookDetailsPage },
-  { path: 'play/:id', canActivate: [SecureAccess], component: PlayPage }
+  { path: 'play/:id', canActivate: [SecureAccess], component: PlayPage },
+  { path: 'levels', canActivate: [SecureAccess], component: LevelsPage },
 ];
 
 @NgModule({
@@ -56,6 +58,7 @@ const routes: Routes = [
     TitlesByAuthorPage,
     PlayPage,
     MyAudioBooksPage,
+    LevelsPage,
   ],
   entryComponents: [
   ],
