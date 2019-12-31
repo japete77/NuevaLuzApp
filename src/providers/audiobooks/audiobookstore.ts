@@ -253,4 +253,8 @@ export class AudioBookStore {
             }
         });
     }
+
+    getDataDir() {
+        return this.dataDir;
+    }
 }

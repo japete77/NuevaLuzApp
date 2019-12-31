@@ -2,6 +2,7 @@ import { OnInit, OnDestroy, Component } from '@angular/core';
 import { MyAudioBook } from 'src/models/myaudiobook';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 import { STATUS_COMPLETED } from 'src/globals';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'audiobooks',
@@ -11,7 +12,10 @@ export class MyAudioBooksPage implements OnInit, OnDestroy {
     
     books: MyAudioBook[] = [];
 
-    constructor(private audioBooksStore: AudioBookStore) {
+    constructor(
+        private audioBooksStore: AudioBookStore,
+        private router: Router
+    ) {
     }
 
     ngOnInit(): void {
@@ -26,5 +30,9 @@ export class MyAudioBooksPage implements OnInit, OnDestroy {
     }    
     
     ngOnDestroy(): void {
+    }
+
+    playBook(id: string) {
+        this.router.navigateByUrl(`play/${id}`);
     }
 }

@@ -1,5 +1,6 @@
 import { SmilInfo } from 'src/models/smilinfo';
 import { Sequence } from 'src/models/sequence';
+import { Injectable } from '@angular/core';
 
 export var NAV_LEVEL_1 : number = 1;
 export var NAV_LEVEL_2 : number = 2;
@@ -12,6 +13,7 @@ export var NAV_LEVEL_PAGE : number = 8;
 export var NAV_LEVEL_BOOKMARK : number = 9;
 export var NAV_LEVEL_INTERVAL : number = 10;
 
+@Injectable()
 export class DaisyBook {
     
     // Metadata info

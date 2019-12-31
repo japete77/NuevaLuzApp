@@ -3,7 +3,59 @@
         <ion-buttons slot="start">
             <ion-back-button text="Atrás"></ion-back-button>
         </ion-buttons>
-        <ion-title>Detalle</ion-title>
+        <ion-title>Reproductor</ion-title>
     </ion-toolbar>
 </ion-header>
-<ion-content></ion-content>
+<ion-content *ngIf="!loading">
+    <ion-grid>
+        <ion-row>
+            <ion-col size="3">
+                <ion-button expand="full" mode="ios" fill="solid" color="primary" (click)="prev()">Retroceder
+                </ion-button>
+            </ion-col>
+            <ion-col size="6">
+                <ion-button expand="full" mode="ios" fill="solid" color="primary" (click)="play(showPlay)">
+                    {{showPlay?'Iniciar Reproduccion':'Parar Reproduccion'}}</ion-button>
+            </ion-col>
+            <ion-col size="3">
+                <ion-button expand="full" mode="ios" fill="solid" color="primary" (click)="next()">Avanzar</ion-button>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col size="3">
+            </ion-col>
+            <ion-col size="6" class="ion-text-center">
+                <span *ngIf="currentStatus">{{currentStatus.position.absoluteTC}} / {{daisyBook.totalTime}}</span>
+            </ion-col>
+            <ion-col size="3" class="ion-text-center">
+                {{getLevel()}}
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+    <ion-list>
+        <ion-item (click)="goToIndex()">
+            Índice
+            <ion-icon name="list" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item (click)="selectLevel()">
+            Niveles de navegación
+            <ion-icon name="browsers" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item (click)="addBookmark()">
+            Crear marcador
+            <ion-icon name="bookmark" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item (click)="showBookmarks()">
+            Ir a marcador
+            <ion-icon name="bookmarks" slot="end"></ion-icon>
+        </ion-item>
+        <ion-item (click)="showInfo(currentBook.id)">
+            Más información
+            <ion-icon name="information" slot="end"></ion-icon>
+        </ion-item>
+    </ion-list>
+    <div class="ion-padding" *ngIf="currentStatus">
+        <h4>{{abook.book.Title}}</h4>
+        <p>{{currentStatus.position.currentTitle}}</p>
+    </div>
+</ion-content>

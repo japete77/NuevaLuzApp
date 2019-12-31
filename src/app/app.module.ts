@@ -28,6 +28,8 @@ import { Zip } from '@ionic-native/zip/ngx';
 import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { Media } from '@ionic-native/media/ngx';
 import { MyAudioBooksPage } from 'src/pages/myaudiobooks/myaudiobooks';
+import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
+import { DaisyBook } from 'src/providers/daisy/daisybook';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -79,6 +81,8 @@ const routes: Routes = [
     SecureAccess,
     Diagnostic,
     Media,
+    DaisyPlayer,
+    DaisyBook,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
   ],
   bootstrap: [AppComponent]
