@@ -61,14 +61,20 @@ export class PlayPage implements OnInit, OnDestroy {
             this.daisyBook.parseDaisyBook(result);
     
             // Read all smil files...
-            for (let i = 0; i < this.daisyBook.body.length; i++) {
-                const smilData = await this.file.readAsBinaryString(this.bookFolder, this.daisyBook.body[i].filename); 
+            var promises : Array<Promise<string>> = new Array<Promise<string>>();
+            this.daisyBook.body.forEach(s => {
+                promises.push(this.file.readAsBinaryString(this.bookFolder, s.filename)); 
+            });            
+
+            let smilData = await Promise.all(promises);
+
+            for (var i = 0; i < smilData.length; i++) {
                 this.daisyBook.parseSmils(
-                    smilData, 
+                    smilData[i], 
                     this.daisyBook.body[i].id, 
                     this.daisyBook.body[i].title, 
                     this.daisyBook.body[i].level
-                );
+                );              
             }
     
             await this.player.loadBook(this.daisyBook);
@@ -77,6 +83,7 @@ export class PlayPage implements OnInit, OnDestroy {
             await loadingDialog.dismiss();
         } else {
             this.daisyBook = this.player.getCurrentBook();
+            this.player.playFromCurrentPos();
         }
 
         this.loading = false;
