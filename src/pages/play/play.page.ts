@@ -1,13 +1,14 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { DaisyBook, NAV_LEVEL_PHRASE, NAV_LEVEL_BOOKMARK, NAV_LEVEL_PAGE, NAV_LEVEL_INTERVAL } from 'src/providers/daisy/daisybook';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 import { File } from '@ionic-native/file/ngx';
-import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
+import { Media } from '@ionic-native/media/ngx';
 import { Subscription } from 'rxjs';
 import { PlayerInfo } from 'src/models/playerinfo';
 import { MyAudioBook } from 'src/models/myaudiobook';
 import { LoadingController } from '@ionic/angular';
+import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
 
 @Component({
     selector: 'play-page',
@@ -28,6 +29,7 @@ export class PlayPage implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private audioBookStore: AudioBookStore,
         private file: File,
+        private media: Media,
         private player: DaisyPlayer,
         private loadingCtrl: LoadingController,
         private router: Router
@@ -91,6 +93,7 @@ export class PlayPage implements OnInit, OnDestroy {
 
         this.playerSubscription = this.player.playerEvent.subscribe((info : PlayerInfo) => {
             this.currentStatus = info;
+            this.showPlay = this.currentStatus.status != this.media.MEDIA_RUNNING;
         });                       
     }
 

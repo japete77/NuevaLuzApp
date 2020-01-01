@@ -33,6 +33,7 @@ import { DaisyBook } from 'src/providers/daisy/daisybook';
 import { LevelsPage } from 'src/pages/levels/levels.page';
 import { InfoPage } from 'src/pages/info/info.page';
 import { IndexPage } from 'src/pages/index/index.page';
+import { DebounceClickDirective } from 'src/directives/debounce.click';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -65,6 +66,7 @@ const routes: Routes = [
     LevelsPage,
     InfoPage,
     IndexPage,
+    DebounceClickDirective,
   ],
   entryComponents: [
   ],
