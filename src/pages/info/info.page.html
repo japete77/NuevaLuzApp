@@ -1,0 +1,53 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Atrás"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Más Información</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <div class="ion-padding">
+        <ion-grid>
+            <ion-row *ngIf="book.title">
+                <ion-col size="4">Título</ion-col>
+                <ion-col size="6">{{book.title}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.subject">
+                <ion-col size="4">Tema</ion-col>
+                <ion-col size="6">{{book.subject}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.totalTime">
+                <ion-col size="4">Duración</ion-col>
+                <ion-col size="6">{{book.totalTime}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.date">
+                <ion-col size="4">Fecha</ion-col>
+                <ion-col size="6">{{book.date}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.creator">
+                <ion-col size="4">Autor</ion-col>
+                <ion-col size="6">{{book.creator}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.narrator">
+                <ion-col size="4">Narrador</ion-col>
+                <ion-col size="6">{{book.narrator}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.publisher">
+                <ion-col size="4">Publicado por</ion-col>
+                <ion-col size="6">{{book.publisher}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.producer">
+                <ion-col size="4">Producido por</ion-col>
+                <ion-col size="6">{{book.producer}}</ion-col>
+            </ion-row>
+            <ion-row *ngIf="book.source">
+                <ion-col size="4">ISBN</ion-col>
+                <ion-col size="6">{{book.source}}</ion-col>
+            </ion-row>
+        </ion-grid>
+    </div>
+    <div class="ion-padding">
+        <ion-button expand="full" mode="ios" fill="solid" color="danger" (click)="delete()">Borrar libro</ion-button>
+    </div>
+</ion-content>

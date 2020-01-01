@@ -187,6 +187,37 @@ export class AudioBookStore {
         await this.processDownloadQueue();
     }
 
+    async delete(id: string) {
+        // Get book to delete
+        const toDelete = this.audioBooks.filter(value => value.book.Id == id);
+                
+        // Update books with a valid status
+        this.audioBooks = this.audioBooks.filter(value => value.book.Id != id);
+        this.saveBooks();
+
+        // Clean up folders
+        toDelete.forEach(item => {
+            if (item.path) {
+                this.file.checkFile(this.dataDir, item.filename)
+                    .then(result => {
+                        if (result) this.file.removeFile(this.dataDir, item.filename);
+                    });
+                
+                this.file.checkDir(this.dataDir, `${item.book.Id}`)
+                    .then(result => {
+                        if (result) this.file.removeRecursively(this.dataDir, `${item.book.Id}`);
+                    });
+
+                if (item.tmpFolder) {
+                    this.file.checkDir(this.dataDir, item.tmpFolder)
+                        .then(result => {
+                            if (result) this.file.removeRecursively(this.dataDir, item.tmpFolder);
+                        });
+                }
+            }
+        });
+    }
+
     async cancel(id: string) {        
         const index = this.audioBooks.findIndex(value => value.book.Id == id);
         if (index > -1) {

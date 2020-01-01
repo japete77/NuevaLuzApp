@@ -138,4 +138,12 @@ export class PlayPage implements OnInit, OnDestroy {
     selectLevel() {
         this.router.navigateByUrl(`levels`);
     }
+
+    showInfo() {
+        this.router.navigateByUrl(`info/${this.id}`);
+    }
+
+    goToIndex() {
+        this.router.navigateByUrl(`index`);
+    }
 }
