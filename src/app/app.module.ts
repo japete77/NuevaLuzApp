@@ -34,6 +34,7 @@ import { LevelsPage } from 'src/pages/levels/levels.page';
 import { InfoPage } from 'src/pages/info/info.page';
 import { IndexPage } from 'src/pages/index/index.page';
 import { DebounceClickDirective } from 'src/directives/debounce.click';
+import { BookmarksPage } from 'src/pages/bookmarks/bookmarks.page';
 
 const routes: Routes = [
   { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -49,6 +50,7 @@ const routes: Routes = [
   { path: 'levels', canActivate: [SecureAccess], component: LevelsPage },
   { path: 'info/:id', canActivate: [SecureAccess], component: InfoPage },
   { path: 'index', canActivate: [SecureAccess], component: IndexPage },
+  { path: 'bookmarks', canActivate: [SecureAccess], component: BookmarksPage },
 ];
 
 @NgModule({
@@ -66,6 +68,7 @@ const routes: Routes = [
     LevelsPage,
     InfoPage,
     IndexPage,
+    BookmarksPage,
     DebounceClickDirective,
   ],
   entryComponents: [

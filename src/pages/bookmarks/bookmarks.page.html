@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Atrás"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Marcadores</ion-title>
+    </ion-toolbar>
+</ion-header>
+<ion-content>
+    <ion-grid>
+        <ion-row *ngFor="let bookmark of bookmarks; let i = index">
+            <ion-col size="6">
+                <ion-item (click)="seekTo(i)">{{ bookmark.title }}</ion-item>
+            </ion-col>
+            <ion-col size="3">
+                <ion-item (click)="seekTo(i)">{{ bookmark.absoluteTC }}</ion-item>
+            </ion-col>
+            <ion-col size="3">
+                <ion-button expand="full" mode="ios" fill="solid" color="danger" (click)="deleteBookmark(i)">Eliminar</ion-button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

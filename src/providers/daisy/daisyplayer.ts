@@ -10,7 +10,7 @@ import { Bookmark } from 'src/models/bookmark';
 import { Mutex } from 'async-mutex';
 
 const STATUS_FILENAME = "status.json"
-const BOOKMARKS_FILENAME = "booksmarks.json"
+const BOOKMARKS_FILENAME = "bookmarks.json"
 
 @Injectable()
 export class DaisyPlayer {
@@ -419,7 +419,6 @@ export class DaisyPlayer {
         if (!isPlaying) {
             this.playerInfo.media.pause();
         }
-
     }
 
     async loadBookmarks() {
@@ -438,7 +437,7 @@ export class DaisyPlayer {
     async saveBooksmarks(bookmarks: Array<Bookmark>) {
         this.playerInfo.bookmarks = bookmarks;
         var bdir = this.audioBooksStore.getDataDir() + this.book.id + "/";
-        await this.file.writeFile(bdir, BOOKMARKS_FILENAME, btoa(JSON.stringify(this.playerInfo.bookmarks)));
+        await this.file.writeFile(bdir, BOOKMARKS_FILENAME, btoa(JSON.stringify(this.playerInfo.bookmarks)), { replace: true });
     }
 
     async loadStatus() {
@@ -450,7 +449,6 @@ export class DaisyPlayer {
             this.playerInfo.position = JSON.parse(atob(statusData));
         }
         catch {
-            console.log("Initializing player info");
             this.playerInfo.position = new SeekInfo();
             this.playerInfo.position.navigationLevel = NAV_LEVEL_1;
             this.playerInfo.position.currentIndex = 0;
