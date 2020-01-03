@@ -59,7 +59,7 @@ export class SessionProvider {
         this.sessionInfo.session = '';
 
         const loading = await this.loadingCtrl.create({
-            message: 'Verificando credenciales...'
+            message: 'Verificando credenciales'
         });
 
         await loading.present();

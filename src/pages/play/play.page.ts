@@ -11,6 +11,9 @@ import { LoadingController, AlertController } from '@ionic/angular';
 import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
 import { Bookmark } from 'src/models/bookmark';
 
+export var FILE_ABOOK_INFO = "info.json";
+export var FILE_ABOOK_NCC = "ncc.html";
+
 @Component({
     selector: 'play-page',
     templateUrl: 'play.page.html',
@@ -53,33 +56,48 @@ export class PlayPage implements OnInit, OnDestroy {
             this.loading = true;
 
             const loadingDialog = await this.loadingCtrl.create({
-                message: 'Cargando audiolibro ...'
+                message: 'Cargando audiolibro'
             });
 
             await loadingDialog.present();
 
             this.bookFolder = `${this.abook.path}/${this.id}/`;
 
-            const result = await this.file.readAsBinaryString(this.bookFolder, "ncc.html");
-            this.daisyBook = new DaisyBook();
-            this.daisyBook.id = this.id;
-            this.daisyBook.parseDaisyBook(result);
+            let existsData = false;
+            try {
+                existsData = await this.file.checkFile(this.bookFolder, FILE_ABOOK_INFO);
+            } catch {
 
-            // Read all smil files...
-            var promises: Array<Promise<string>> = new Array<Promise<string>>();
-            this.daisyBook.body.forEach(s => {
-                promises.push(this.file.readAsBinaryString(this.bookFolder, s.filename));
-            });
+            }
 
-            let smilData = await Promise.all(promises);
-
-            for (var i = 0; i < smilData.length; i++) {
-                this.daisyBook.parseSmils(
-                    smilData[i],
-                    this.daisyBook.body[i].id,
-                    this.daisyBook.body[i].title,
-                    this.daisyBook.body[i].level
-                );
+            if (!existsData) {
+                const result = await this.file.readAsBinaryString(this.bookFolder, FILE_ABOOK_NCC);
+                this.daisyBook = new DaisyBook();
+                this.daisyBook.id = this.id;
+                this.daisyBook.parseDaisyBook(result);
+    
+                // Read all smil files...
+                var promises: Array<Promise<string>> = new Array<Promise<string>>();
+                this.daisyBook.body.forEach(s => {
+                    promises.push(this.file.readAsBinaryString(this.bookFolder, s.filename));
+                });
+    
+                let smilData = await Promise.all(promises);
+    
+                for (var i = 0; i < smilData.length; i++) {
+                    this.daisyBook.parseSmils(
+                        smilData[i],
+                        this.daisyBook.body[i].id,
+                        this.daisyBook.body[i].title,
+                        this.daisyBook.body[i].level
+                    );
+                }
+                // save book info
+                await this.file.writeFile(this.bookFolder, FILE_ABOOK_INFO, btoa(JSON.stringify(this.daisyBook)), { replace: true });
+            } else {
+                // load book info
+                let infoData = await this.file.readAsBinaryString(this.bookFolder, FILE_ABOOK_INFO);
+                this.daisyBook = JSON.parse(atob(infoData));
             }
 
             await this.player.loadBook(this.daisyBook);

@@ -74,7 +74,7 @@ export class AudioBookStore {
                             if (progress !== this.currentAudioBook.progress) {
                                 this.currentAudioBook.progress = progress;
                                 this.currentAudioBook.statusKey = STATUS_DOWNLOADING;
-                                this.currentAudioBook.statusDescription = `${this.currentAudioBook.progress}% descargado...`;
+                                this.currentAudioBook.statusDescription = `${this.currentAudioBook.progress}% descargado`;
                                 this.audioBookSource.next(this.currentAudioBook);
                             }
                         }
@@ -137,7 +137,7 @@ export class AudioBookStore {
                     if (progress !== this.currentAudioBook.progress) {
                         this.currentAudioBook.progress = progress;
                         this.currentAudioBook.statusKey = STATUS_INSTALLING;
-                        this.currentAudioBook.statusDescription = `Instalando: ${this.currentAudioBook.progress}% completado...`;
+                        this.currentAudioBook.statusDescription = `Instalando: ${this.currentAudioBook.progress}% completado`;
                         this.audioBookSource.next(this.currentAudioBook);
                     }
                 }

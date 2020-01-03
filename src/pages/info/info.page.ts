@@ -49,7 +49,7 @@ export class InfoPage implements OnInit {
                         this.player.stop();
 
                         const loadingDialog = await this.loadingCtrl.create({
-                            message: 'Eliminando audiolibro ...'
+                            message: 'Eliminando audiolibro'
                         });
 
                         await loadingDialog.present();

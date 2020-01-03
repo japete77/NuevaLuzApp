@@ -102,7 +102,7 @@ export class AudioBooksProvider {
     private async GetByQuery<T>(query: string): Promise<T> {
 
         const loading = await this.loadingCtrl.create({
-            message: 'Cargando...'
+            message: 'Cargando'
         });
 
         await loading.present();
