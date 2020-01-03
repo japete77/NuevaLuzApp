@@ -36,6 +36,7 @@ import { IndexPage } from 'src/pages/index/index.page';
 import { DebounceClickDirective } from 'src/directives/debounce.click';
 import { BookmarksPage } from 'src/pages/bookmarks/bookmarks.page';
 import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { MusicControls } from '@ionic-native/music-controls/ngx';
 
 const routes: Routes = [
     { path: '', redirectTo: 'home', pathMatch: 'full' },
@@ -100,6 +101,7 @@ const routes: Routes = [
         DaisyBook,
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         BackgroundMode,
+        MusicControls,
     ],
     bootstrap: [AppComponent]
 })

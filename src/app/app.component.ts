@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
@@ -41,6 +41,6 @@ export class AppComponent implements OnInit {
 
         // this.background.setEnabled(true);
         // this.statusBar.styleDefault();
-        // this.splashScreen.hide();    
+        // this.splashScreen.hide();        
     }
 }

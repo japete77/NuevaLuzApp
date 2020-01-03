@@ -1,0 +1,69 @@
+{
+  "_from": "cordova-plugin-music-controls",
+  "_id": "cordova-plugin-music-controls@2.2.0",
+  "_inBundle": false,
+  "_integrity": "sha512-rMKY5brPRycCKo+gpgd+sc8aLO1QmCZ75rhu0QO9Log1lXR8IIdYsYUDGKzFt4bm1GhpPHgb9UUKvHpsKaxOwQ==",
+  "_location": "/cordova-plugin-music-controls",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-music-controls",
+    "name": "cordova-plugin-music-controls",
+    "escapedName": "cordova-plugin-music-controls",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-music-controls/-/cordova-plugin-music-controls-2.2.0.tgz",
+  "_shasum": "0ca78b473c398518a92aaddbdcc5b96767468026",
+  "_spec": "cordova-plugin-music-controls",
+  "_where": "/Users/juanpablogonzalezjara/Devel/NuevaLuzApp",
+  "author": {
+    "name": "homerours"
+  },
+  "bugs": {
+    "url": "https://github.com/homerours/cordova-music-controls-plugin/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-music-controls",
+    "platforms": [
+      "android",
+      "windows",
+      "ios"
+    ]
+  },
+  "deprecated": false,
+  "description": "Music controls for Cordova apps",
+  "engines": [
+    {
+      "name": "cordova",
+      "version": ">=3.4.0"
+    }
+  ],
+  "homepage": "https://github.com/homerours/cordova-music-controls-plugin#readme",
+  "keywords": [
+    "cordova",
+    "music",
+    "controller",
+    "controls",
+    "media",
+    "plugin",
+    "notification",
+    "ecosystem:cordova",
+    "cordova-android",
+    "cordova-windows"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-music-controls",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/homerours/cordova-music-controls-plugin.git"
+  },
+  "version": "2.2.0"
+}

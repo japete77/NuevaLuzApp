@@ -5,6 +5,7 @@ import { DaisyBook } from 'src/providers/daisy/daisybook';
 import { BoundElementProperty } from '@angular/compiler';
 import { AlertController, LoadingController } from '@ionic/angular';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
+import { MusicControls } from '@ionic-native/music-controls/ngx';
 
 @Component({
     selector: 'info',
@@ -21,7 +22,8 @@ export class InfoPage implements OnInit {
         private audiobookStore: AudioBookStore,
         private alertController: AlertController,
         private activatedRoute: ActivatedRoute,
-        private loadingCtrl: LoadingController
+        private loadingCtrl: LoadingController,
+        private musicControls: MusicControls,
     ) {
     }
 
@@ -53,6 +55,8 @@ export class InfoPage implements OnInit {
                         await loadingDialog.present();
 
                         await this.audiobookStore.delete(this.id);
+
+                        this.musicControls.destroy();
 
                         await loadingDialog.dismiss();
 

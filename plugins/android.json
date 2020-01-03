@@ -41,6 +41,9 @@
     "cordova.plugins.diagnostic": {
       "ANDROID_SUPPORT_VERSION": "28.+",
       "PACKAGE_NAME": "io.ionic.nuevaluz"
+    },
+    "cordova-plugin-music-controls": {
+      "PACKAGE_NAME": "io.ionic.nuevaluz"
     }
   },
   "dependent_plugins": {
