@@ -39,6 +39,7 @@
     "cordova-plugin-media": "^5.0.3",
     "cordova-plugin-music-controls": "^2.2.0",
     "cordova-plugin-zip": "^3.1.0",
+    "cordova-res": "^0.8.1",
     "cordova.plugins.diagnostic": "^5.0.1",
     "core-js": "^2.5.4",
     "ngx-build-plus": "^9.0.2",

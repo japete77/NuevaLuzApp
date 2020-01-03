@@ -576,6 +576,10 @@ export class DaisyPlayer {
         );
     }
 
+    setRate(rate: number) {
+        this.playerInfo.media.setRate(rate);
+    }
+
     seconds2TC(seconds: number): string {
         if (seconds < 0) seconds = 0;
 
