@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
 import { Title } from 'src/models/title';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -8,20 +8,9 @@ import { TitleResult } from 'src/models/titleresult';
     selector: 'page-titlebyauthor',
     templateUrl: 'titlesbyauthor.html',
 })
-export class TitlesByAuthorPage {
+export class TitlesByAuthorPage implements OnInit {
 
     authorid: number;
-
-    constructor(
-        private router: Router,
-        private activatedRoute: ActivatedRoute,
-        private audiobooks: AudioBooksProvider
-    ) {
-        this.hasMore = false;
-        this.authorid = Number(this.activatedRoute.snapshot.params.id);
-        this.loadMore();
-    }
-
     titles: Array<Title> = [];
     hasMore: boolean;
     loading = false;
@@ -30,16 +19,27 @@ export class TitlesByAuthorPage {
     private index = 0;
     private filterText = '';
 
-    loadMore() {
-        this.audiobooks.GetBooksByAuthor(this.authorid, this.index, this.pageSize)
-            .then((value: TitleResult) => {
-                this.index += this.pageSize;
-                this.hasMore = (this.index < value.Total);
+    constructor(
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+        private audiobooks: AudioBooksProvider
+    ) {
+    }
 
-                value.Titles.forEach(element => {
-                    this.titles.push(element);
-                });
-            });
+    async ngOnInit() {
+        this.hasMore = false;
+        this.authorid = Number(this.activatedRoute.snapshot.params.id);
+        await this.loadMore();
+    }
+
+    async loadMore() {
+        let value = await this.audiobooks.GetBooksByAuthor(this.authorid, this.index, this.pageSize);
+        this.index += this.pageSize;
+        this.hasMore = (this.index < value.Total);
+
+        value.Titles.forEach(element => {
+            this.titles.push(element);
+        });
     }
 
     // filter(event: any) {
