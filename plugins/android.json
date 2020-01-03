@@ -7,6 +7,9 @@
     "files": {}
   },
   "installed_plugins": {
+    "cordova-plugin-background-mode": {
+      "PACKAGE_NAME": "io.ionic.nuevaluz"
+    },
     "cordova-plugin-device": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },

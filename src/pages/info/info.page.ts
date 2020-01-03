@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
 import { DaisyBook } from 'src/providers/daisy/daisybook';
@@ -7,10 +7,10 @@ import { AlertController, LoadingController } from '@ionic/angular';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 
 @Component({
-  selector: 'info',
-  templateUrl: 'info.page.html'
+    selector: 'info',
+    templateUrl: 'info.page.html'
 })
-export class InfoPage {
+export class InfoPage implements OnInit {
 
     book: DaisyBook;
     id: string;
@@ -23,6 +23,9 @@ export class InfoPage {
         private activatedRoute: ActivatedRoute,
         private loadingCtrl: LoadingController
     ) {
+    }
+
+    ngOnInit(): void {
         this.book = this.player.getCurrentBook()
         this.id = this.activatedRoute.snapshot.params.id;
     }
@@ -32,33 +35,33 @@ export class InfoPage {
             header: 'Confirmar',
             message: 'Esto eliminará el audio libro y todos los marcadores creados ¿Está seguro?',
             buttons: [
-              {
-                text: 'No',
-                role: 'cancel',
-                cssClass: 'secondary',
-                handler: () => {                  
+                {
+                    text: 'No',
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => {
+                    }
+                }, {
+                    text: 'Si',
+                    handler: async () => {
+                        this.player.stop();
+
+                        const loadingDialog = await this.loadingCtrl.create({
+                            message: 'Eliminando audiolibro ...'
+                        });
+
+                        await loadingDialog.present();
+
+                        await this.audiobookStore.delete(this.id);
+
+                        await loadingDialog.dismiss();
+
+                        this.router.navigateByUrl(`/home`);
+                    }
                 }
-              }, {
-                text: 'Si',
-                handler: async () => {
-                    this.player.stop();
-
-                    const loadingDialog = await this.loadingCtrl.create({
-                        message: 'Eliminando audiolibro ...'
-                    });
-            
-                    await loadingDialog.present();
-
-                    await this.audiobookStore.delete(this.id);
-
-                    await loadingDialog.dismiss();
-
-                    this.router.navigateByUrl(`/home`);
-                }
-              }
             ]
-          });
-        
-        await confirm.present();        
-    }  
+        });
+
+        await confirm.present();
+    }
 }

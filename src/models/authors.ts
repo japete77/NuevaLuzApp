@@ -1,4 +1,4 @@
 export class Author {
-  Id: number;
-  Name: string;
+    Id: number;
+    Name: string;
 }

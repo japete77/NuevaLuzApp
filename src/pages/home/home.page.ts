@@ -4,27 +4,27 @@ import { Platform } from '@ionic/angular';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 
 @Component({
-  selector: 'page-home',
-  templateUrl: 'home.page.html'
+    selector: 'page-home',
+    templateUrl: 'home.page.html'
 })
 export class HomePage {
 
-  constructor(private router: Router, public platform: Platform, private store: AudioBookStore) {
-  }
+    constructor(private router: Router, public platform: Platform, private store: AudioBookStore) {
+    }
 
-  async gotoAudioLibrary() {
-    this.router.navigateByUrl(`audiolibrary`);
-  }
+    async gotoAudioLibrary() {
+        this.router.navigateByUrl(`audiolibrary`);
+    }
 
-  gotoAudioBooks() {
-    this.router.navigateByUrl(`myaudiobooks`);
-  }
+    gotoAudioBooks() {
+        this.router.navigateByUrl(`myaudiobooks`);
+    }
 
-  gotoNotifications() {
-    // this.router.navigateByUrl(`notifications`);
-  }
+    gotoNotifications() {
+        // this.router.navigateByUrl(`notifications`);
+    }
 
-  gotoConfiguration() {
-    // this.router.navigateByUrl(`configuration`);
-  }
+    gotoConfiguration() {
+        // this.router.navigateByUrl(`configuration`);
+    }
 }

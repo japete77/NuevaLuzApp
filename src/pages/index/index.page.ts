@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
 import { DaisyBook } from 'src/providers/daisy/daisybook';
@@ -10,7 +10,7 @@ import { SmilInfo } from 'src/models/smilinfo';
   selector: 'index',
   templateUrl: 'index.page.html'
 })
-export class IndexPage {
+export class IndexPage implements OnInit {
 
     book: DaisyBook;
     items: SmilInfo[];
@@ -19,6 +19,9 @@ export class IndexPage {
         private location: Location,
         private player: DaisyPlayer,
     ) {
+    }
+
+    ngOnInit(): void {
         this.book = this.player.getCurrentBook();
         const currentLevel = this.player.getPlayerInfo().position.navigationLevel;
         this.items = this.book.body.filter(f => f.level <= currentLevel);

@@ -1,6 +1,6 @@
 import { Title } from './title';
 
 export class TitleResult {
-  Titles: Array<Title>;
-  Total: number;
+    Titles: Array<Title>;
+    Total: number;
 }

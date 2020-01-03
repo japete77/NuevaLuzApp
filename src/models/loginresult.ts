@@ -1,5 +1,5 @@
 export class LoginResult {
-  Message: string;
-  Session: string;
-  Success: boolean;
+    Message: string;
+    Session: string;
+    Success: boolean;
 }

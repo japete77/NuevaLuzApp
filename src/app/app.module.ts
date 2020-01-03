@@ -19,7 +19,7 @@ import { LoginPage } from 'src/pages/login/login.page';
 import { HomePage } from 'src/pages/home/home.page';
 import { AudioLibraryPage } from 'src/pages/audiolibrary/audiolibrary';
 import { ByTitlePage } from 'src/pages/bytitle/bytitle';
-import { PlayPage} from 'src/pages/play/play.page';
+import { PlayPage } from 'src/pages/play/play.page';
 import { SessionProvider } from 'src/providers/session/session';
 import { AudioBooksProvider } from 'src/providers/audiobooks/audiobooks';
 import { SecureAccess } from 'src/shared/secure.access';
@@ -35,70 +35,72 @@ import { InfoPage } from 'src/pages/info/info.page';
 import { IndexPage } from 'src/pages/index/index.page';
 import { DebounceClickDirective } from 'src/directives/debounce.click';
 import { BookmarksPage } from 'src/pages/bookmarks/bookmarks.page';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: 'login', component: LoginPage },
-  { path: 'home', component: HomePage },
-  { path: 'myaudiobooks' , component: MyAudioBooksPage },
-  { path: 'audiolibrary' , canActivate: [SecureAccess], component: AudioLibraryPage },
-  { path: 'bytitle' , canActivate: [SecureAccess], component: ByTitlePage },
-  { path: 'byauthor' , canActivate: [SecureAccess], component: ByAuthorPage },
-  { path: 'titlesbyauthor/:id' , canActivate: [SecureAccess], component: TitlesByAuthorPage },
-  { path: 'bookdetails/:id', canActivate: [SecureAccess], component: BookDetailsPage },
-  { path: 'play/:id', canActivate: [SecureAccess], component: PlayPage },
-  { path: 'levels', canActivate: [SecureAccess], component: LevelsPage },
-  { path: 'info/:id', canActivate: [SecureAccess], component: InfoPage },
-  { path: 'index', canActivate: [SecureAccess], component: IndexPage },
-  { path: 'bookmarks', canActivate: [SecureAccess], component: BookmarksPage },
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: 'login', component: LoginPage },
+    { path: 'home', component: HomePage },
+    { path: 'myaudiobooks', component: MyAudioBooksPage },
+    { path: 'audiolibrary', canActivate: [SecureAccess], component: AudioLibraryPage },
+    { path: 'bytitle', canActivate: [SecureAccess], component: ByTitlePage },
+    { path: 'byauthor', canActivate: [SecureAccess], component: ByAuthorPage },
+    { path: 'titlesbyauthor/:id', canActivate: [SecureAccess], component: TitlesByAuthorPage },
+    { path: 'bookdetails/:id', canActivate: [SecureAccess], component: BookDetailsPage },
+    { path: 'play/:id', canActivate: [SecureAccess], component: PlayPage },
+    { path: 'levels', canActivate: [SecureAccess], component: LevelsPage },
+    { path: 'info/:id', canActivate: [SecureAccess], component: InfoPage },
+    { path: 'index', canActivate: [SecureAccess], component: IndexPage },
+    { path: 'bookmarks', canActivate: [SecureAccess], component: BookmarksPage },
 ];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginPage,
-    HomePage,
-    AudioLibraryPage,
-    ByTitlePage,
-    BookDetailsPage,
-    ByAuthorPage,
-    TitlesByAuthorPage,
-    PlayPage,
-    MyAudioBooksPage,
-    LevelsPage,
-    InfoPage,
-    IndexPage,
-    BookmarksPage,
-    DebounceClickDirective,
-  ],
-  entryComponents: [
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    IonicModule,
-    BrowserModule,
-    IonicModule.forRoot(),
-    RouterModule.forRoot(routes),
-    IonicStorageModule.forRoot(),
-  ],
-  exports:  [RouterModule ],
-  providers: [
-    StatusBar,
-    SplashScreen,
-    SessionProvider,
-    File,
-    FileTransfer,
-    AudioBooksProvider,
-    AudioBookStore,
-    Zip,
-    SecureAccess,
-    Diagnostic,
-    Media,
-    DaisyPlayer,
-    DaisyBook,
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-  ],
-  bootstrap: [AppComponent]
+    declarations: [
+        AppComponent,
+        LoginPage,
+        HomePage,
+        AudioLibraryPage,
+        ByTitlePage,
+        BookDetailsPage,
+        ByAuthorPage,
+        TitlesByAuthorPage,
+        PlayPage,
+        MyAudioBooksPage,
+        LevelsPage,
+        InfoPage,
+        IndexPage,
+        BookmarksPage,
+        DebounceClickDirective,
+    ],
+    entryComponents: [
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        IonicModule,
+        BrowserModule,
+        IonicModule.forRoot(),
+        RouterModule.forRoot(routes),
+        IonicStorageModule.forRoot(),
+    ],
+    exports: [RouterModule],
+    providers: [
+        StatusBar,
+        SplashScreen,
+        SessionProvider,
+        File,
+        FileTransfer,
+        AudioBooksProvider,
+        AudioBookStore,
+        Zip,
+        SecureAccess,
+        Diagnostic,
+        Media,
+        DaisyPlayer,
+        DaisyBook,
+        { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        BackgroundMode,
+    ],
+    bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

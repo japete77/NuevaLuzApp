@@ -5,87 +5,87 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TitleResult } from 'src/models/titleresult';
 
 @Component({
-  selector: 'page-titlebyauthor',
-  templateUrl: 'titlesbyauthor.html',
+    selector: 'page-titlebyauthor',
+    templateUrl: 'titlesbyauthor.html',
 })
 export class TitlesByAuthorPage {
 
-  authorid: number;
+    authorid: number;
 
-  constructor(
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private audiobooks: AudioBooksProvider
-  ) {
-    this.hasMore = false;
-    this.authorid = Number(this.activatedRoute.snapshot.params.id);
-    this.loadMore();
-  }
+    constructor(
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+        private audiobooks: AudioBooksProvider
+    ) {
+        this.hasMore = false;
+        this.authorid = Number(this.activatedRoute.snapshot.params.id);
+        this.loadMore();
+    }
 
-  titles: Array<Title> = [];
-  hasMore: boolean;
-  loading = false;
+    titles: Array<Title> = [];
+    hasMore: boolean;
+    loading = false;
 
-  private pageSize = 25;
-  private index = 0;
-  private filterText = '';
+    private pageSize = 25;
+    private index = 0;
+    private filterText = '';
 
-  loadMore() {
-    this.audiobooks.GetBooksByAuthor(this.authorid, this.index, this.pageSize)
-    .then((value: TitleResult) => {
-        this.index += this.pageSize;
-        this.hasMore = (this.index < value.Total);
+    loadMore() {
+        this.audiobooks.GetBooksByAuthor(this.authorid, this.index, this.pageSize)
+            .then((value: TitleResult) => {
+                this.index += this.pageSize;
+                this.hasMore = (this.index < value.Total);
 
-        value.Titles.forEach(element => {
-        this.titles.push(element);
-        });
-    });
-  }
+                value.Titles.forEach(element => {
+                    this.titles.push(element);
+                });
+            });
+    }
 
-  // filter(event: any) {
+    // filter(event: any) {
 
-  //   this.filterText = event.target.value;
+    //   this.filterText = event.target.value;
 
-  //   this.loading = true;
-  //   this.index = 0;
-  //   this.titles = [];
+    //   this.loading = true;
+    //   this.index = 0;
+    //   this.titles = [];
 
-  //   if (this.filterText !== undefined && this.filterText !== '')
-  //   {
+    //   if (this.filterText !== undefined && this.filterText !== '')
+    //   {
 
-  //     this.audiobooks.SearchBooksByTitle(event.target.value, this.index, this.pageSize)
-  //     .subscribe(value => {
+    //     this.audiobooks.SearchBooksByTitle(event.target.value, this.index, this.pageSize)
+    //     .subscribe(value => {
 
-  //       this.index += this.pageSize;
-  //       this.hasMore = (this.index < value.SearchTitlesResult.Total);
+    //       this.index += this.pageSize;
+    //       this.hasMore = (this.index < value.SearchTitlesResult.Total);
 
-  //       value.SearchTitlesResult.Titles.forEach(element => {
-  //         this.titles.push(element);
-  //       });
+    //       value.SearchTitlesResult.Titles.forEach(element => {
+    //         this.titles.push(element);
+    //       });
 
-  //       this.loading = false;
-  //     });
+    //       this.loading = false;
+    //     });
 
-  //   } else {
+    //   } else {
 
-  //     this.audiobooks.GetBooksByTitle(this.index, this.pageSize)
-  //     .subscribe(value => {
+    //     this.audiobooks.GetBooksByTitle(this.index, this.pageSize)
+    //     .subscribe(value => {
 
-  //       this.index += this.pageSize;
-  //       this.hasMore = (this.index < value.GetTitlesResult.Total);
+    //       this.index += this.pageSize;
+    //       this.hasMore = (this.index < value.GetTitlesResult.Total);
 
-  //       value.GetTitlesResult.Titles.forEach(element => {
-  //         this.titles.push(element);
-  //       });
+    //       value.GetTitlesResult.Titles.forEach(element => {
+    //         this.titles.push(element);
+    //       });
 
-  //       this.loading = false;
-  //     });
+    //       this.loading = false;
+    //     });
 
-  //   }
-  // }
+    //   }
+    // }
 
-  gotoDetails(id: string) {
-    this.router.navigateByUrl(`bookdetails/${id}`);
-  }
+    gotoDetails(id: string) {
+        this.router.navigateByUrl(`bookdetails/${id}`);
+    }
 
 }

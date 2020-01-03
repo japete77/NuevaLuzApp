@@ -5,30 +5,30 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class SecureAccess implements CanActivate {
 
-  constructor(private sessionProvider: SessionProvider, private router: Router) {
-  }
+    constructor(private sessionProvider: SessionProvider, private router: Router) {
+    }
 
-  canActivate(route: ActivatedRouteSnapshot) {
+    canActivate(route: ActivatedRouteSnapshot) {
 
-    // tslint:disable-next-line:no-string-literal
-    const redirectUrl = route['_routerState']['url'];
+        // tslint:disable-next-line:no-string-literal
+        const redirectUrl = route['_routerState']['url'];
 
-    this.sessionProvider.initialize()
-    .then(result => {
-      if (!this.sessionProvider.isAuthenticated()) {
-        this.router.navigateByUrl(
-          this.router.createUrlTree(
-            ['/login'], {
-              queryParams: {
-                redirectUrl
-              }
-            }
-          ),
-          { replaceUrl: true }
-        );
-      }
-    });
+        this.sessionProvider.initialize()
+            .then(result => {
+                if (!this.sessionProvider.isAuthenticated()) {
+                    this.router.navigateByUrl(
+                        this.router.createUrlTree(
+                            ['/login'], {
+                            queryParams: {
+                                redirectUrl
+                            }
+                        }
+                        ),
+                        { replaceUrl: true }
+                    );
+                }
+            });
 
-    return true;
-  }
+        return true;
+    }
 }

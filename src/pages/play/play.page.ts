@@ -34,7 +34,7 @@ export class PlayPage implements OnInit, OnDestroy {
         private player: DaisyPlayer,
         private loadingCtrl: LoadingController,
         private router: Router,
-        private alertCtrl: AlertController
+        private alertCtrl: AlertController,
     ) {
     }
 

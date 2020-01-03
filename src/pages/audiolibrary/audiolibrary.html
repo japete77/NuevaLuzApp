@@ -1,22 +1,22 @@
 <ion-header>
-  <ion-toolbar>
-    <ion-buttons slot="start">
-      <ion-back-button text="Atrás"></ion-back-button>
-    </ion-buttons>
-    <ion-title>Audioteca</ion-title>
-  </ion-toolbar>
+    <ion-toolbar>
+        <ion-buttons slot="start">
+            <ion-back-button text="Atrás"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Audioteca</ion-title>
+    </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-list>
-    <ion-item (click)="gotoByTitleIndex()">
-      <ion-icon name="list" slot="start"></ion-icon>
-      <ion-icon name="arrow-forward" slot="end"></ion-icon>
-      Por Título
-    </ion-item>
-    <ion-item (click)="gotoByAuthorIndex()">
-      <ion-icon name="person" slot="start"></ion-icon>
-      <ion-icon name="arrow-forward" slot="end"></ion-icon>
-      Por Autor
-    </ion-item>
-  </ion-list>
+    <ion-list>
+        <ion-item (click)="gotoByTitleIndex()">
+            <ion-icon name="list" slot="start"></ion-icon>
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+            Por Título
+        </ion-item>
+        <ion-item (click)="gotoByAuthorIndex()">
+            <ion-icon name="person" slot="start"></ion-icon>
+            <ion-icon name="arrow-forward" slot="end"></ion-icon>
+            Por Autor
+        </ion-item>
+    </ion-list>
 </ion-content>
