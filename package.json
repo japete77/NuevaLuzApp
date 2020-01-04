@@ -19,11 +19,11 @@
     "@angular/platform-browser": "~8.1.2",
     "@angular/platform-browser-dynamic": "~8.1.2",
     "@angular/router": "~8.1.2",
-    "@ionic-native/background-mode": "^5.19.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/diagnostic": "^5.18.0",
     "@ionic-native/file": "^5.17.0",
     "@ionic-native/file-transfer": "^5.17.1",
+    "@ionic-native/insomnia": "^5.19.1",
     "@ionic-native/media": "^5.18.0",
     "@ionic-native/music-controls": "^5.19.0",
     "@ionic-native/splash-screen": "^5.0.0",
@@ -33,9 +33,9 @@
     "@ionic/storage": "^2.2.0",
     "async-mutex": "^0.1.4",
     "cordova-android": "^8.1.0",
-    "cordova-plugin-background-mode": "^0.7.3",
     "cordova-plugin-file": "^6.0.2",
     "cordova-plugin-file-transfer": "^1.7.1",
+    "cordova-plugin-insomnia": "^4.3.0",
     "cordova-plugin-media": "^5.0.3",
     "cordova-plugin-music-controls": "^2.2.0",
     "cordova-plugin-zip": "^3.1.0",
@@ -98,8 +98,8 @@
         "ANDROID_SUPPORT_VERSION": "28.+"
       },
       "cordova-plugin-media": {},
-      "cordova-plugin-background-mode": {},
-      "cordova-plugin-music-controls": {}
+      "cordova-plugin-music-controls": {},
+      "cordova-plugin-insomnia": {}
     },
     "platforms": [
       "android"

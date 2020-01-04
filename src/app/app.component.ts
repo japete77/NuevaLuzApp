@@ -3,7 +3,7 @@ import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-import { BackgroundMode } from '@ionic-native/background-mode/ngx';
+import { Insomnia } from '@ionic-native/insomnia/ngx';
 import { Subscription } from 'rxjs';
 import { MusicControls } from '@ionic-native/music-controls/ngx';
 import { Router } from '@angular/router';
@@ -19,9 +19,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
     constructor(
         private platform: Platform,
-        private background: BackgroundMode,
         private musicControls: MusicControls,
         private router: Router,
+        private insomnia: Insomnia,
         private splashScreen: SplashScreen,
         private statusBar: StatusBar,
     ) {
@@ -35,19 +35,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
             console.log('Device Android');
         } else if (this.platform.is('ios')) {
             console.log('Device iOS');
-
-            // Only valid for iOS
-            this.background.setDefaults({
-                title: 'Audioteca Nueva Luz',
-                ticker: 'Audioteca Nueva Luz',
-                text: 'Audioteca Nueva Luz'
-            });
-
-            this.background.enable();
-            console.log('Background mode enabled');
         }
 
-        // this.background.setEnabled(true);
+        await this.insomnia.keepAwake();
+        console.log('Keep awake enabled');
+
         // this.statusBar.styleDefault();
         // this.splashScreen.hide();        
     }

@@ -13,6 +13,7 @@ import { Diagnostic } from '@ionic-native/diagnostic/ngx';
 import { Media } from '@ionic-native/media/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
+import { Insomnia } from '@ionic-native/insomnia/ngx';
 
 import { AppComponent } from './app.component';
 import { LoginPage } from 'src/pages/login/login.page';
@@ -35,7 +36,6 @@ import { InfoPage } from 'src/pages/info/info.page';
 import { IndexPage } from 'src/pages/index/index.page';
 import { DebounceClickDirective } from 'src/directives/debounce.click';
 import { BookmarksPage } from 'src/pages/bookmarks/bookmarks.page';
-import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 import { MusicControls } from '@ionic-native/music-controls/ngx';
 
 const routes: Routes = [
@@ -100,7 +100,7 @@ const routes: Routes = [
         DaisyPlayer,
         DaisyBook,
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-        BackgroundMode,
+        Insomnia,
         MusicControls,
     ],
     bootstrap: [AppComponent]
