@@ -54,7 +54,6 @@ export class DaisyPlayer {
                             this.play(this.playerInfo.position);
                         }
 
-
                         if (this.book.sequence[this.playerInfo.position.currentIndex].tcout < position) {
                             this.playerInfo.position.currentIndex++;
                             this.playerInfo.position.currentTitle = this.book.sequence[this.playerInfo.position.currentIndex].title;

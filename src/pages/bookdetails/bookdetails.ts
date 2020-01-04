@@ -7,6 +7,7 @@ import { MyAudioBook } from 'src/models/myaudiobook';
 import { ChangeDetectorRef } from '@angular/core'
 import { STATUS_INSTALLING, STATUS_DOWNLOADING, STATUS_PENDING, STATUS_ERROR } from 'src/globals';
 import { Subscription } from 'rxjs';
+import { AlertController, LoadingController } from '@ionic/angular';
 
 @Component({
     selector: 'page-bookdetails',
@@ -31,7 +32,9 @@ export class BookDetailsPage implements OnInit, OnDestroy {
         private activatedRoute: ActivatedRoute,
         private audioBooksProvider: AudioBooksProvider,
         private audioBookStore: AudioBookStore,
-        private changeRef: ChangeDetectorRef
+        private changeRef: ChangeDetectorRef,
+        private alertController: AlertController,
+        private loadingCtrl: LoadingController,
     ) {
     }
 
@@ -106,5 +109,38 @@ export class BookDetailsPage implements OnInit, OnDestroy {
 
     async play() {
         this.router.navigateByUrl(`play/${this.id}`);
+    }
+
+    async delete() {
+        const confirm = await this.alertController.create({
+            header: 'Confirmar',
+            message: 'Esto eliminará el audio libro y todos los marcadores creados ¿Está seguro?',
+            buttons: [
+                {
+                    text: 'No',
+                    role: 'cancel',
+                    cssClass: 'secondary',
+                    handler: () => {
+                    }
+                }, {
+                    text: 'Si',
+                    handler: async () => {
+                        const loadingDialog = await this.loadingCtrl.create({
+                            message: 'Eliminando audiolibro'
+                        });
+
+                        await loadingDialog.present();
+
+                        await this.audioBookStore.delete(this.id);
+
+                        await loadingDialog.dismiss();
+
+                        this.available = false;
+                    }
+                }
+            ]
+        });
+
+        await confirm.present();
     }
 }
