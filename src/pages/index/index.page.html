@@ -7,7 +7,7 @@
     </ion-toolbar>
 </ion-header>
 <ion-content>
-    <div>
+    <div *ngIf="!loading">
         <ion-list>
             <ion-item *ngFor="let item of items; let i = index" (click)="seek(i)">
                 {{ item.title }}

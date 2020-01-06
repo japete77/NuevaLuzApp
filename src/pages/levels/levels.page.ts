@@ -2,7 +2,7 @@ import { Component, ViewChildren, AfterViewInit, OnInit } from '@angular/core';
 import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
 import { IonRadioGroup } from '@ionic/angular';
 import { Location } from '@angular/common';
-import { NAV_LEVEL_PHRASE, NAV_LEVEL_PAGE, NAV_LEVEL_BOOKMARK, NAV_LEVEL_INTERVAL } from 'src/providers/daisy/daisybook';
+import { NAV_LEVEL_PHRASE, NAV_LEVEL_PAGE } from 'src/providers/daisy/daisybook';
 
 @Component({
     selector: 'levels',
@@ -45,18 +45,6 @@ export class LevelsPage implements OnInit, AfterViewInit {
             color: 'primary'
         });
 
-        if (info.bookmarks && info.bookmarks.length > 0) {
-            this.levels.push({
-                id: NAV_LEVEL_BOOKMARK,
-                name: 'levels',
-                value: NAV_LEVEL_BOOKMARK,
-                text: `Marcas`,
-                disabled: false,
-                checked: currentLevel == NAV_LEVEL_BOOKMARK,
-                color: 'primary'
-            });
-        }
-
         if (this.player.getCurrentBook().hasPages) {
             this.levels.push({
                 id: NAV_LEVEL_PAGE,
@@ -68,16 +56,6 @@ export class LevelsPage implements OnInit, AfterViewInit {
                 color: 'primary'
             });
         }
-
-        this.levels.push({
-            id: NAV_LEVEL_INTERVAL,
-            name: 'levels',
-            value: NAV_LEVEL_INTERVAL,
-            text: `Intervalo`,
-            disabled: false,
-            checked: currentLevel == NAV_LEVEL_INTERVAL,
-            color: 'primary'
-        });
     }
 
     ngAfterViewInit(): void {

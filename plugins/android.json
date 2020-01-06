@@ -7,10 +7,16 @@
     "files": {}
   },
   "installed_plugins": {
+    "cordova-plugin-background-mode": {
+      "PACKAGE_NAME": "io.ionic.nuevaluz"
+    },
     "cordova-plugin-device": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
     "cordova-plugin-file-transfer": {
+      "PACKAGE_NAME": "io.ionic.nuevaluz"
+    },
+    "cordova-plugin-insomnia": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
     "cordova-plugin-ionic-keyboard": {
@@ -21,6 +27,9 @@
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
     "cordova-plugin-media": {
+      "PACKAGE_NAME": "io.ionic.nuevaluz"
+    },
+    "cordova-plugin-music-controls": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
     "cordova-plugin-splashscreen": {
@@ -39,16 +48,9 @@
       "ANDROID_SUPPORT_VERSION": "28.+",
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     },
-    "cordova-plugin-music-controls": {
-      "PACKAGE_NAME": "io.ionic.nuevaluz"
-    },
-    "cordova-plugin-insomnia": {
-      "PACKAGE_NAME": "io.ionic.nuevaluz"
-    }
-  },
-  "dependent_plugins": {
     "cordova-plugin-file": {
       "PACKAGE_NAME": "io.ionic.nuevaluz"
     }
-  }
+  },
+  "dependent_plugins": {}
 }

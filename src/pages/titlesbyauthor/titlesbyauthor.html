@@ -16,7 +16,7 @@
             </ion-item>
         </ion-list>
 
-        <div class="ion-padding" *ngIf="hasMore">
+        <div class="ion-padding" *ngIf="hasMore && !loading">
             <ion-button color="primary" expand="full" mode="ios" fill="solid" (click)="loadMore()">Ver mas titulos
             </ion-button>
         </div>

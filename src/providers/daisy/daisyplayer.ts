@@ -6,14 +6,16 @@ import { File } from '@ionic-native/file/ngx';
 import { MusicControls } from '@ionic-native/music-controls/ngx';
 
 import { PlayerInfo } from 'src/models/playerinfo';
-import { DaisyBook, NAV_LEVEL_PHRASE, NAV_LEVEL_PAGE, NAV_LEVEL_BOOKMARK, NAV_LEVEL_INTERVAL, NAV_LEVEL_1 } from './daisybook';
+import { DaisyBook, NAV_LEVEL_1 } from './daisybook';
 import { AudioBookStore } from '../audiobooks/audiobookstore';
 import { SeekInfo } from 'src/models/seekinfo';
 import { Bookmark } from 'src/models/bookmark';
-import { Mutex } from 'async-mutex';
 
 const STATUS_FILENAME = "status.json"
 const BOOKMARKS_FILENAME = "bookmarks.json"
+
+export var FORWARD = 1;
+export var BACKWARD = -1;
 
 @Injectable()
 export class DaisyPlayer {
@@ -21,9 +23,9 @@ export class DaisyPlayer {
     mediaTimer: Subscription;
     playerStatus: Subscription;
     playerInfo: PlayerInfo;
-    isPlaying: boolean = false;
     book: DaisyBook;
-    mutex: Mutex;
+    playTimeout: any;
+    wasPlaying: boolean;
 
     public playerEvent = new Subject<PlayerInfo>();
 
@@ -33,56 +35,101 @@ export class DaisyPlayer {
         private audioBooksStore: AudioBookStore,
         private musicControls: MusicControls
     ) {
-        this.mutex = new Mutex();
-
-        const sourceTimer = timer(0, 500);
-        this.mediaTimer = sourceTimer.subscribe(val => {
-
-            if (this.playerInfo && this.playerInfo.media) {
-
-                this.playerInfo.media.getCurrentPosition()
-                    .then((position: number) => {
-                        if (position > -1) {
-                            this.playerInfo.position.currentTC = position;
-                            this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
-                        }
-
-                        if (this.isPlaying && (this.playerInfo.position.currentTC < 0 ||
-                            this.playerInfo.status === this.media.MEDIA_STOPPED)) {
-                            this.loadNextFile(1);
-                            this.playerInfo.status = this.media.MEDIA_RUNNING;
-                            this.play(this.playerInfo.position);
-                        }
-
-                        if (this.book.sequence[this.playerInfo.position.currentIndex].tcout < position) {
-                            this.playerInfo.position.currentIndex++;
-                            this.playerInfo.position.currentTitle = this.book.sequence[this.playerInfo.position.currentIndex].title;
-                        }
-
-                        this.playerEvent.next(this.playerInfo);
-                    });
-            }
-        });
+        this.setPlayerEvents(true);
     }
 
-    private async loadNextFile(step: number) {
-        if (this.book.sequence.length > this.playerInfo.position.currentIndex + step &&
-            this.playerInfo.position.currentIndex + step >= 0) {
-            this.release();
-            this.playerInfo.position.currentIndex += step;
-            this.playerInfo.position.currentSOM = this.book.sequence[this.playerInfo.position.currentIndex].som;
-            this.playerInfo.position.currentTC = 0;
-            this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
-            this.playerInfo.position.currentTitle = this.book.sequence[this.playerInfo.position.currentIndex].title;
-            this.createMediaPlayer(this.audioBooksStore.getDataDir() + "/" + this.book.id + "/" + this.book.sequence[this.playerInfo.position.currentIndex].filename);
-            await this.saveStatus(this.playerInfo);
+    private setPlayerEvents(enable: boolean) {
+        if (enable) {
+            // Timer to generate player events
+            this.mediaTimer = timer(0, 500).subscribe(val => {
+
+                if (this.playerInfo && this.playerInfo.media) {
+
+                    this.playerInfo.media.getCurrentPosition()
+                        .then((position: number) => {
+
+                            if (position > -1) {
+                                this.playerInfo.position.currentTC = position;
+                                this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
+                            }
+
+                            if (this.playerInfo.position.currentIndex >= 0 &&
+                                this.playerInfo.position.currentIndex < this.book.sequence.length) {
+                                    if (this.book.sequence[this.playerInfo.position.currentIndex].tcout < position) {
+                                        this.playerInfo.position.currentIndex++;
+                                        this.playerInfo.position.currentTitle = this.book.sequence[this.playerInfo.position.currentIndex].title;
+                                    }        
+                                }
+
+                            this.playerEvent.next(this.playerInfo);
+                            this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
+                        });
+                }
+            });
+
+        } else {
+
+            this.mediaTimer.unsubscribe();
+
         }
     }
 
-    createMediaPlayer(file: string) {        
+    private async loadNextFile(): Promise<boolean> {
+
+        let currentSeq = this.book.sequence[this.playerInfo.position.currentIndex];
+        let newFile, newIndex;
+        for (let i = this.playerInfo.position.currentIndex; i < this.book.sequence.length; i++) {
+            if (this.book.sequence[i].filename != currentSeq.filename) {
+                newFile = this.book.sequence[i].filename;
+                newIndex = i;
+                break;
+            }
+        }
+
+        this.release();
+
+        if (newFile) {
+            this.playerInfo.position.currentIndex = newIndex;
+            this.playerInfo.position.currentSOM = this.book.sequence[newIndex].som;
+            this.playerInfo.position.currentTC = 0;
+            this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
+            this.playerInfo.position.currentTitle = this.book.sequence[newIndex].title;
+            let filetoplay = `${this.audioBooksStore.getDataDir()}${this.book.id}/${newFile}`;
+            console.log(`Loading file ${filetoplay}`);
+            this.createMediaPlayer(filetoplay);
+            await this.saveStatus(this.playerInfo);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    createMediaPlayer(file: string) {
         this.playerInfo.media = this.media.create(file);
         if (this.playerStatus) this.playerStatus.unsubscribe();
-        this.playerStatus = this.playerInfo.media.onStatusUpdate.subscribe(status => { this.playerInfo.status = status });
+        this.playerStatus = this.playerInfo.media.onStatusUpdate.subscribe(async (status) => {
+            let currentPosition = await this.playerInfo.media.getCurrentPosition();
+            this.playerInfo.status = status;
+            
+            console.log(`Status: ${status}, Duration: ${this.playerInfo.media.getDuration()}, Current: ${currentPosition}`)
+            
+            if (status == this.media.MEDIA_STOPPED && currentPosition < 0) {
+                console.log('Stopped detected!');
+                // Stopped due to audio file reached the end... so play the next one
+                let hasNext = await this.loadNextFile();
+                if (hasNext) {
+                    this.play(this.playerInfo.position);
+                } else {
+                    this.playerInfo.position.currentIndex = 0;
+                    this.playerInfo.position.currentTC = 0;
+                    this.playerInfo.position.currentSOM = this.book.sequence[this.playerInfo.position.currentIndex].som;
+                    this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
+                    this.playerInfo.position.currentTitle = this.book.sequence[this.playerInfo.position.currentIndex].title;
+                    await this.saveStatus(this.playerInfo);    
+                    this.stop();
+                }
+            }
+        });
     }
 
     createPlayerControls() {
@@ -93,7 +140,7 @@ export class DaisyPlayer {
             // cover: 'albums/absolution.jpg', // optional, default : nothing
             // cover can be a local path (use fullpath 'file:///storage/emulated/...', or only 'my_image.jpg' if my_image.jpg is in the www folder of your app)
             //           or a remote url ('http://...', 'https://...', 'ftp://...')
-            isPlaying: true,                         // optional, default : true
+            isPlaying: this.playerInfo.status == this.media.MEDIA_RUNNING,                 // optional, default : true
             dismissable: true,                         // optional, default : false
 
             // hide previous/next/close buttons:
@@ -123,17 +170,17 @@ export class DaisyPlayer {
             notificationIcon: 'notification'
         });
 
-        this.musicControls.subscribe().subscribe(action => {
+        this.musicControls.subscribe().subscribe(async (action) => {
 
             console.log(action);
 
             const message = JSON.parse(action).message;
             switch (message) {
                 case 'music-controls-next':
-                    this.next();
+                    await this.move(FORWARD);
                     break;
                 case 'music-controls-previous':
-                    this.prev();
+                    await this.move(BACKWARD);
                     break;
                 case 'music-controls-pause':
                     this.pause();
@@ -147,17 +194,17 @@ export class DaisyPlayer {
 
                 // External controls (iOS only)
                 case 'music-controls-toggle-play-pause':
-                    if (this.isPlaying) {
+                    if (this.playerInfo.status == this.media.MEDIA_RUNNING) {
                         this.pause();
                     } else {
                         this.playFromCurrentPos();
-                    }                    
+                    }
                     break;
                 case 'music-controls-skip-forward':
-                    this.next();
+                    await this.move(FORWARD);
                     break;
                 case 'music-controls-skip-backward':
-                    this.prev();
+                    await this.move(BACKWARD);
                     break;
 
                 default:
@@ -167,7 +214,7 @@ export class DaisyPlayer {
 
         this.musicControls.listen(); // activates the observable above
 
-        this.musicControls.updateIsPlaying(this.isPlaying);
+        this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
     }
 
     async loadBook(book: DaisyBook) {
@@ -188,10 +235,10 @@ export class DaisyPlayer {
         this.book = book;
 
         await this.loadStatus();
-        this.createMediaPlayer(this.audioBooksStore.getDataDir() + "/" + this.book.id + "/" + this.book.sequence[this.playerInfo.position.currentIndex].filename);
+        await this.loadBookmarks();
+        this.createMediaPlayer(`${this.audioBooksStore.getDataDir()}${this.book.id}/${this.book.sequence[this.playerInfo.position.currentIndex].filename}`);
         this.createPlayerControls();
         this.play(this.playerInfo.position);
-        await this.loadBookmarks();
     }
 
     getLevels(): Array<string> {
@@ -214,8 +261,7 @@ export class DaisyPlayer {
         if (this.playerInfo && this.playerInfo.media) {
             this.playerInfo.media.play();
             this.playerInfo.status = this.media.MEDIA_RUNNING;
-            this.isPlaying = true;
-            this.musicControls.updateIsPlaying(this.isPlaying);
+            this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
         }
     }
 
@@ -224,8 +270,7 @@ export class DaisyPlayer {
             this.playerInfo.media.play();
             this.playerInfo.media.seekTo(position.currentTC * 1000);
             this.playerInfo.status = this.media.MEDIA_RUNNING;
-            this.isPlaying = true;
-            this.musicControls.updateIsPlaying(this.isPlaying);
+            this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
         }
     }
 
@@ -233,8 +278,7 @@ export class DaisyPlayer {
         if (this.playerInfo && this.playerInfo.media) {
             this.playerInfo.media.stop();
             this.playerInfo.status = this.media.MEDIA_STOPPED;
-            this.isPlaying = false;
-            this.musicControls.updateIsPlaying(this.isPlaying);
+            this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
         }
     }
 
@@ -242,8 +286,7 @@ export class DaisyPlayer {
         if (this.playerInfo && this.playerInfo.media) {
             this.playerInfo.media.pause();
             this.playerInfo.status = this.media.MEDIA_PAUSED;
-            this.isPlaying = false;
-            this.musicControls.updateIsPlaying(this.isPlaying);
+            this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
         }
     }
 
@@ -251,261 +294,84 @@ export class DaisyPlayer {
         if (this.playerInfo && this.playerInfo.media) {
             this.playerInfo.media.release();
             this.playerInfo.status = this.media.MEDIA_NONE;
-            this.isPlaying = false;
-            this.musicControls.updateIsPlaying(this.isPlaying);
+            this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
         }
     }
 
-    async next() {
+    async move(updown: number) {
 
-        this.mutex.acquire().then(async (release) => {
+        clearTimeout(this.playTimeout);
 
-            try {
-                this.isPlaying = false;
-                this.musicControls.updateIsPlaying(this.isPlaying);
+        this.wasPlaying = this.wasPlaying || (this.playerInfo.status === this.media.MEDIA_RUNNING);
+        
+        this.pause();
 
-                var index: number = 0;
-
-                if (this.playerInfo.position.navigationLevel <= NAV_LEVEL_PHRASE) {
-                    index = this.playerInfo.position.currentIndex;
-
-                    // protect bounds...
-                    if (index >= 0 && this.book.sequence.length <= index) return;
-
-                    var filename: string = this.book.sequence[index].filename;
-                    var level: number = this.playerInfo.position.navigationLevel;
-
-                    do {
-                        index++;
-                    } while (index < this.book.sequence.length && this.book.sequence[index].level > level);
-
-                    // protect bounds...
-                    if (index < 0) {
-                        index = 0;
-                        return;
-                    }
-                    if (index >= this.book.sequence.length) {
-                        index = this.book.sequence.length - 1;
-                        return;
-                    }
-
-                    this.playerInfo.position.currentIndex = index;
-                    this.playerInfo.position.currentSOM = this.book.sequence[index].som;
-                    this.playerInfo.position.currentTC = this.book.sequence[index].tcin;
-                    this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
-                    this.playerInfo.position.currentTitle = this.book.sequence[index].title;
-                }
-                else if (this.playerInfo.position.navigationLevel === NAV_LEVEL_PAGE) {
-                    index = this.playerInfo.position.currentIndex;
-
-                    // protect bounds...
-                    if (index >= 0 && this.book.sequence.length <= index) return;
-
-                    var filename: string = this.book.sequence[index].filename;
-                    var level: number = this.playerInfo.position.navigationLevel;
-
-                    do {
-                        index++;
-                    } while (index < this.book.sequence.length && this.book.sequence[index].level != NAV_LEVEL_PAGE);
-
-                    // protect bounds...
-                    if (index < 0) {
-                        index = this.playerInfo.position.currentIndex;
-                        return;
-                    }
-                    if (index >= this.book.sequence.length) {
-                        index = this.playerInfo.position.currentIndex;
-                        return;
-                    }
-
-                    this.playerInfo.position.currentIndex = index;
-                    this.playerInfo.position.currentSOM = this.book.sequence[index].som;
-                    this.playerInfo.position.currentTC = this.book.sequence[index].tcin;
-                    this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
-                    this.playerInfo.position.currentTitle = this.book.sequence[index].title;
-
-                }
-                else if (this.playerInfo.position.navigationLevel === NAV_LEVEL_BOOKMARK) {
-                    if (this.playerInfo.bookmarks) {
-                        var absoluteTC: number = this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC;
-
-                        var found: boolean = false;
-                        var goBookmark: Bookmark = null;
-                        this.playerInfo.bookmarks.forEach((bm: Bookmark, index: number, array: Bookmark[]) => {
-                            if (!found && bm.som + bm.tc > absoluteTC) {
-                                found = true;
-                                goBookmark = bm;
-                            }
-                        });
-
-                        if (goBookmark) {
-                            this.seek(goBookmark);
-                        }
-
-                        return;
-                    }
-                }
-                else if (this.playerInfo.position.navigationLevel === NAV_LEVEL_INTERVAL) {
-
-                }
-
-                var wasPlaying: boolean = (this.playerInfo.status === this.media.MEDIA_RUNNING);
-
-                if (this.book.sequence[index].filename !== filename) {
-                    await this.loadNextFile(0);
-                }
-
-                await this.saveStatus(this.playerInfo);
-
-                if (wasPlaying) {
-                    this.playerInfo.media.play();
-                    this.isPlaying = true;
-                }
-
-                this.playerInfo.media.seekTo(this.playerInfo.position.currentTC * 1000);
-
-                if (!wasPlaying) {
-                    this.playerInfo.media.pause();
-                    this.isPlaying = false;
-                }
-
-                this.musicControls.updateIsPlaying(this.isPlaying);
-
-            } finally {
-                release();
+        // Calculate current position in sequence
+        let index = this.playerInfo.position.currentIndex;
+        let currentPos = await this.playerInfo.media.getCurrentPosition();
+        if (currentPos > 0) {
+            while (index >= 0 &&
+                index < this.book.sequence.length - 1 &&
+                !(currentPos >= this.book.sequence[index].tcin &&
+                    currentPos <= this.book.sequence[index].tcout)) {
+                index++;
             }
-        });
-    }
+        }
 
-    async prev() {
+        let filename = this.book.sequence[index].filename;
 
-        this.mutex.acquire().then(async (release) => {
-            try {
-                this.isPlaying = false;
-                this.musicControls.updateIsPlaying(this.isPlaying);
+        do {
+            index += updown;
+        } while (index > 0 && index < this.book.sequence.length && this.book.sequence[index].level > this.playerInfo.position.navigationLevel);
 
-                var index: number = 0;
+        // adjust bounds
+        if (index < 0) {
+            index = 0;
+        }
+        else if (index > this.book.sequence.length - 1) {
+            index = this.book.sequence.length - 1;
+        } else {
+            this.playerInfo.position.currentIndex = index;
+            this.playerInfo.position.currentSOM = this.book.sequence[index].som;
+            this.playerInfo.position.currentTC = this.book.sequence[index].tcin;
+            this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
+            this.playerInfo.position.currentTitle = this.book.sequence[index].title;
+        }
 
-                if (this.playerInfo.position.navigationLevel <= NAV_LEVEL_PHRASE) {
-                    index = this.playerInfo.position.currentIndex;
+        if (this.book.sequence[index].filename !== filename) {
+            this.release();
+            this.createMediaPlayer(`${this.audioBooksStore.getDataDir()}${this.book.id}/${this.book.sequence[index].filename}`);
+        }
 
-                    // protect bounds...
-                    if (index >= 0 && this.book.sequence.length <= index) return;
+        await this.saveStatus(this.playerInfo);
 
-                    var filename: string = this.book.sequence[index].filename;
-                    var level: number = this.playerInfo.position.navigationLevel;
+        this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
+        this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
 
-                    do {
-                        index--;
-                    } while (index > 0 && this.book.sequence[index].level > level);
+        if (this.playerInfo.position.currentTC > 0) {
+            this.playerInfo.media.seekTo(this.playerInfo.position.currentTC * 1000);
+        }
 
-                    // protect bounds...
-                    if (index < 0) {
-                        index = 0;
-                    }
-                    if (index >= this.book.sequence.length) {
-                        index = this.playerInfo.position.currentIndex;
-                        return;
-                    }
-
-                    this.playerInfo.position.currentIndex = index;
-                    this.playerInfo.position.currentSOM = this.book.sequence[index].som;
-                    this.playerInfo.position.currentTC = this.book.sequence[index].tcin;
-                    this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
-                    this.playerInfo.position.currentTitle = this.book.sequence[index].title;
-                }
-                else if (this.playerInfo.position.navigationLevel <= NAV_LEVEL_PAGE) {
-                    index = this.playerInfo.position.currentIndex;
-
-                    // protect bounds...
-                    if (index >= 0 && this.book.sequence.length <= index) return;
-
-                    var filename: string = this.book.sequence[index].filename;
-                    var level: number = this.playerInfo.position.navigationLevel;
-
-                    do {
-                        index--;
-                    } while (index > 0 && this.book.sequence[index].level != NAV_LEVEL_PAGE);
-
-                    // protect bounds...
-                    if (index < 0) {
-                        index = this.playerInfo.position.currentIndex;
-                        return;
-                    }
-                    if (index >= this.book.sequence.length) {
-                        index = this.book.sequence.length - 1;
-                        return;
-                    }
-
-                    this.playerInfo.position.currentIndex = index;
-                    this.playerInfo.position.currentSOM = this.book.sequence[index].som;
-                    this.playerInfo.position.currentTC = this.book.sequence[index].tcin;
-                    this.playerInfo.position.absoluteTC = this.seconds2TC(this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC);
-                    this.playerInfo.position.currentTitle = this.book.sequence[index].title;
-                }
-                else if (this.playerInfo.position.navigationLevel === NAV_LEVEL_BOOKMARK) {
-                    if (this.playerInfo.bookmarks) {
-                        var absoluteTC: number = this.playerInfo.position.currentSOM + this.playerInfo.position.currentTC;
-
-                        var found: boolean = false;
-                        var goBookmark: Bookmark = null;
-                        for (var i = this.playerInfo.bookmarks.length - 1; i >= 0; i--) {
-                            if (!found && this.playerInfo.bookmarks[i].som + this.playerInfo.bookmarks[i].tc < absoluteTC - 5) {
-                                found = true;
-                                goBookmark = this.playerInfo.bookmarks[i];
-                            }
-                        }
-
-                        if (goBookmark) {
-                            this.seek(goBookmark);
-                        }
-
-                        return;
-                    }
-                }
-                else if (this.playerInfo.position.navigationLevel === NAV_LEVEL_INTERVAL) {
-
-                }
-
-                var wasPlaying: boolean = (this.playerInfo.status === this.media.MEDIA_RUNNING);
-
-                if (this.book.sequence[this.playerInfo.position.currentIndex].filename !== filename || index == 0) {
-                    await this.loadNextFile(0);
-                }
-
-                await this.saveStatus(this.playerInfo);
-
-                if (wasPlaying) {
-                    this.playerInfo.media.play();
-                    this.isPlaying = true;
-                }
-
-                this.playerInfo.media.seekTo(this.playerInfo.position.currentTC * 1000);
-
-                if (!wasPlaying) {
-                    this.playerInfo.media.pause();
-                    this.isPlaying = false;
-                }
-
-                this.musicControls.updateIsPlaying(this.isPlaying);
-
-            } finally {
-                release();
+        // resume play after 1 sec
+        this.playTimeout = setTimeout(() => {
+            if (this.wasPlaying) {
+                this.playerInfo.media.play();
+                this.wasPlaying = false;
             }
-        });
+
+        }, 1000);
     }
 
     seek(bookmark: Bookmark) {
 
-        this.isPlaying = false;
-        this.musicControls.updateIsPlaying(this.isPlaying);
-
         var isPlaying: boolean = (this.playerInfo.status === this.media.MEDIA_RUNNING);
+
+        this.playerInfo.media.pause();
 
         // If filename is not currently laoded, load the right one
         if (this.book.sequence[bookmark.index].filename != this.book.sequence[this.playerInfo.position.currentIndex].filename) {
             this.release();
-            this.createMediaPlayer(this.audioBooksStore.getDataDir() + "/" + this.book.id + "/" + this.book.sequence[bookmark.index].filename);
+            this.createMediaPlayer(`${this.audioBooksStore.getDataDir()}${this.book.id}/${this.book.sequence[bookmark.index].filename}`);
         }
 
         // update status
@@ -515,15 +381,15 @@ export class DaisyPlayer {
         this.playerInfo.position.currentTC = bookmark.tc;
         this.playerInfo.position.currentTitle = this.book.sequence[bookmark.index].title;
 
-        this.playerInfo.media.play();
         // Seek to the position in the player
         this.playerInfo.media.seekTo(bookmark.tc * 1000);
-        // play if running
-        if (!isPlaying) {
-            this.playerInfo.media.pause();
+
+        // pause if it was not playing
+        if (isPlaying) {
+            this.playerInfo.media.play();
         }
 
-        this.musicControls.updateIsPlaying(this.isPlaying);
+        this.musicControls.updateIsPlaying(this.playerInfo.status == this.media.MEDIA_RUNNING);
     }
 
     async loadBookmarks() {

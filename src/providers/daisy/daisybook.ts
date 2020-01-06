@@ -10,8 +10,6 @@ export var NAV_LEVEL_5 : number = 5;
 export var NAV_LEVEL_6 : number = 6;
 export var NAV_LEVEL_PHRASE : number = 7;
 export var NAV_LEVEL_PAGE : number = 8;
-export var NAV_LEVEL_BOOKMARK : number = 9;
-export var NAV_LEVEL_INTERVAL : number = 10;
 
 @Injectable()
 export class DaisyBook {

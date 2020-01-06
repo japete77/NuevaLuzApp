@@ -14,6 +14,7 @@ import { Media } from '@ionic-native/media/ngx';
 import { File } from '@ionic-native/file/ngx';
 import { FileTransfer } from '@ionic-native/file-transfer/ngx';
 import { Insomnia } from '@ionic-native/insomnia/ngx';
+import { BackgroundMode } from '@ionic-native/background-mode/ngx';
 
 import { AppComponent } from './app.component';
 import { LoginPage } from 'src/pages/login/login.page';
@@ -102,6 +103,7 @@ const routes: Routes = [
         { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
         Insomnia,
         MusicControls,
+        BackgroundMode,
     ],
     bootstrap: [AppComponent]
 })

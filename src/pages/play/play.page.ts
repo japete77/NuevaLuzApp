@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { DaisyBook, NAV_LEVEL_PHRASE, NAV_LEVEL_BOOKMARK, NAV_LEVEL_PAGE, NAV_LEVEL_INTERVAL } from 'src/providers/daisy/daisybook';
+import { DaisyBook, NAV_LEVEL_PHRASE, NAV_LEVEL_PAGE } from 'src/providers/daisy/daisybook';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AudioBookStore } from 'src/providers/audiobooks/audiobookstore';
 import { File } from '@ionic-native/file/ngx';
@@ -8,7 +8,7 @@ import { Subscription } from 'rxjs';
 import { PlayerInfo } from 'src/models/playerinfo';
 import { MyAudioBook } from 'src/models/myaudiobook';
 import { LoadingController, AlertController } from '@ionic/angular';
-import { DaisyPlayer } from 'src/providers/daisy/daisyplayer';
+import { DaisyPlayer, FORWARD, BACKWARD } from 'src/providers/daisy/daisyplayer';
 import { Bookmark } from 'src/models/bookmark';
 
 export var FILE_ABOOK_INFO = "info.json";
@@ -124,11 +124,11 @@ export class PlayPage implements OnInit, OnDestroy {
     }
 
     async next() {
-        await this.player.next();
+        await this.player.move(FORWARD);
     }
 
     async prev() {
-        await this.player.prev();
+        await this.player.move(BACKWARD);
     }
 
     play() {
@@ -146,12 +146,8 @@ export class PlayPage implements OnInit, OnDestroy {
             switch (info.position.navigationLevel) {
                 case NAV_LEVEL_PHRASE:
                     return "Frase";
-                case NAV_LEVEL_BOOKMARK:
-                    return "Marcas";
                 case NAV_LEVEL_PAGE:
                     return "Página";
-                case NAV_LEVEL_INTERVAL:
-                    return "Intervalo";
                 default:
                     return `Nivel ${info.position.navigationLevel}`;
             }
